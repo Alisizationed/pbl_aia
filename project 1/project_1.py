@@ -112,7 +112,7 @@ def main_autobuz():
     ]
 
   print("=== CĂUTARE STAȚIE OPTIMĂ ===\n")
-  print(f"Poziția ta: ({pozitie student['x']}, {pozitie_student['y']})\n")
+  print(f"Poziția ta: ({pozitie_student['x']}, {pozitie_student['y']})\n")
   rezultate = gaseste_statie_optima(statii, pozitie_student) 
   print(f"Analizate {len(statii)} stații:\n") 
 
