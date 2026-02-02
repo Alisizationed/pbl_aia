@@ -23,9 +23,13 @@ def analizeaza_statie(statie, pozitie_student):
   # Analizăm fiecare linie de autobuz
   optiuni_linii = [] 
 
-  for linie in statie['linii']: 
-
-    timp_asteptare_mediu = linie['frecventa_min'] / 2 
+  for linie in statie['linii']:
+    #Timp mediu de asteptare: daca frecventa=0, consideram 0 min
+    frecventa=linie.get('frecventa_min',0)
+    if frecventa>0:
+        timp_asteptare_mediu=frecventa/2
+    else:
+        timp_asteptare_mediu=0 #autobuzul vine imediat
     timp_calatorie = linie['durata_calatorie_min'] 
     timp_total = timp_mers + timp_asteptare_mediu + timp_calatorie 
 
