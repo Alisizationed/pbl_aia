@@ -48,12 +48,12 @@ def analizeaza_statie(statie, pozitie_student):
       }  
 
 def gaseste_statie_optima(statii, pozitie_student): 
-  """ Analizează toate stațiile și găsește opțiunea optimă= """  
+  """ Analizează toate stațiile și găsește opțiunea optimă """
   analize = [] 
 
   for statie in statii:
-     analiza = analizeaza_statie(statie, pozitie_student)
-     analize.append(analiza) 
+    analiza = analizeaza_statie(statie, pozitie_student)
+    analize.append(analiza)
 
   # Sortăm după timp total
   analize_sortate = sorted(analize, key=lambda a: a['cea_mai_rapida_optiune']['timp_total'])
@@ -135,5 +135,5 @@ def main_autobuz():
   print(f"Ia autobuzul {cea_mai_buna['cea_mai_rapida_optiune']['linie']}")
   print(f"Timp total estimat: {cea_mai_buna['cea_mai_rapida_optiune']['timp_total']:.1f} minute")  
 
-if name == "__main__":
+if __name__ == "__main__":
   main_autobuz()
