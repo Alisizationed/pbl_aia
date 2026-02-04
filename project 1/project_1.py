@@ -1,5 +1,6 @@
 import math
 import numbers
+import time
 
 class Colors:
     BLUE = '\033[94m'
@@ -29,6 +30,7 @@ def analizeaza_statie(statie, pozitie_student):
     distanta_la_statie = calculeaza_distanta_euclidiana(pozitie_student, statie)
     timp_mers = calculeaza_timp_mers_pe_jos(distanta_la_statie)
 
+    # Analizăm fiecare linie de autobuz
     optiuni_linii = []
     for linie in statie['linii']:
         timp_asteptare_mediu = linie['frecventa_min'] / 2
@@ -43,6 +45,7 @@ def analizeaza_statie(statie, pozitie_student):
             'timp_total': timp_total
         })
 
+    # Găsim cea mai rapidă linie de la această stație
     cea_mai_rapida = min(optiuni_linii, key=lambda o: o['timp_total'])
 
     return {
@@ -65,7 +68,11 @@ def station_is_valid(station):
     if not is_number(station['x']) or not is_number(station['y']):
         print(f"{station['nume']} has wrong coordinates")
         return False
+
+    # Skip invalid lines
     station['linii'] = [line for line in station['linii'] if line_is_valid(line)]
+
+    # Verify if this station has lines
     if len(station['linii']) == 0:
         print(f"{station['nume']} doesn't have any lines")
         return False
@@ -75,10 +82,12 @@ def station_is_valid(station):
 def gaseste_statie_optima(statii, pozitie_student):
     analize = []
     for statie in statii:
+        # Skip invalid stations
         if not station_is_valid(statie):
             continue
         analiza = analizeaza_statie(statie, pozitie_student)
         analize.append(analiza)
+        # Sortăm după timp total
     return sorted(analize, key=lambda a: a['cea_mai_rapida_optiune']['timp_total'])
 
 
@@ -96,7 +105,6 @@ def afiseaza_interfata_vizuala(rezultate):
 
         color_theme = Colors.GREEN if i == 1 else ""
 
-        # Progress bars removed as requested, keeping text colors and formatting
         print(f"{color_theme}{Colors.BOLD}{i}. {analiza['statie']} (Linie recomandată: {optiune['linie']}){Colors.END}")
         print(f" Timp total: {optiune['timp_total']:.1f} min")
         print(f" {Colors.BLUE}🚶Mers pe jos: {t_mers:.1f} min{Colors.END}")
@@ -104,6 +112,7 @@ def afiseaza_interfata_vizuala(rezultate):
         print(f" {Colors.RED}🚌Durata călătoriei: {t_drum} min{Colors.END}\n")
 
 
+    # Program principal
 def main_autobuz():
     pozitie_student = {"x": 100, "y": 150}
     statii = [
@@ -130,7 +139,9 @@ def main_autobuz():
         },
     ]
 
-    print("=== CĂUTARE STAȚIE OPTIMĂ ===\n")
+    print("=== 🔎CĂUTARE STAȚIE OPTIMĂ ===\n")
+    time.sleep(1)
+    print(f"  {Colors.GREEN}{Colors.END} Identificate {len(statii)} stații.")
     print(f"Poziția ta: ({pozitie_student['x']}, {pozitie_student['y']})\n")
     rezultate = gaseste_statie_optima(statii, pozitie_student)
 
