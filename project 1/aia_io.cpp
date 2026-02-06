@@ -9,13 +9,12 @@ using namespace std;
 
 // TODO: Implement Time Checker function
 template<typename Func>
-void measure(Func f, const string& funcName=__func__){
+long long measure(Func f){
     auto start = chrono::high_resolution_clock::now();
     f();
     auto end = chrono::high_resolution_clock::now();
     auto duration = chrono::duration_cast<chrono::microseconds>(end - start);
-
-    cout << funcName << ": " << duration.count() << " microseconds\n" << endl;
+    return duration.count();
 }
 
 // TODO: Implement reading from a file
