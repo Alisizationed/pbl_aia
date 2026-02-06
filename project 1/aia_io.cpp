@@ -3,12 +3,20 @@
 #include <cstdio>
 #include <string>
 #include <vector>
+#include <chrono>
 
 using namespace std;
 
 // TODO: Implement Time Checker function
 template<typename Func>
-long long measure(Func f);
+void measure(Func f, const string& funcName=__func__){
+    auto start = chrono::high_resolution_clock::now();
+    f();
+    auto end = chrono::high_resolution_clock::now();
+    auto duration = chrono::duration_cast<chrono::microseconds>(end - start);
+
+    cout << funcName << ": " << duration.count() << " microseconds\n" << endl;
+}
 
 // TODO: Implement reading from a file
 // TODO: Use fscanf for reading
