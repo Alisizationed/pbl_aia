@@ -1,0 +1,55 @@
+# CLion IDE files
+.idea/
+*.iml
+cmake-build-*/
+
+# CMake generated files
+CMakeFiles/
+CMakeCache.txt
+cmake_install.cmake
+Makefile
+*.cmake
+
+# Build artifacts
+*.o
+*.obj
+*.a
+*.so
+*.dylib
+*.dll
+*.exe
+*.out
+
+# Logs, temporary files
+*.log
+*.tmp
+*.swp
+*.swo
+
+# OS-specific
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# Linux
+*~
+
+# Backup files
+*.bak
+*.old
+
+# Optional: coverage reports, testing files
+coverage/
+*.gcda
+*.gcno
+*.gcov
+
+# Optional: generated documentation
+docs/html/
+docs/latex/
