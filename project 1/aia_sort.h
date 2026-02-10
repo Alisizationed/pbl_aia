@@ -8,7 +8,7 @@ void sort_adelina(vector<int> &nums);
 
 void sort_ana(vector<int> &nums);
 
-void sort_anastasia(vector<int> &nums);
+void heap_sort(vector<int> &nums);
 
 void sort_andreea(vector<int> &nums);
 
