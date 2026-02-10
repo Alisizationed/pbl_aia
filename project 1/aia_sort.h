@@ -6,7 +6,7 @@ using namespace std;
 
 void sort_adelina(vector<int> &nums);
 
-void sort_ana(vector<int> &nums);
+void timSort(vector<int> &nums);
 
 void heap_sort(vector<int> &nums);
 
