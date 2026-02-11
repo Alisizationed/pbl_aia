@@ -15,7 +15,7 @@ void check_file(pair<long, string> filename) {
     // TODO: Add benchmarking for each sorting algorithm
     vector<int> nums_adelina = nums;
     long long time_adelina = measure([&]() {
-        sort_adelina(nums_adelina);
+        bucketSort(nums_adelina);
     });
 
     // TODO: Enhance printing
@@ -41,7 +41,7 @@ int main() {
     long n = 100; // number of numbers
 
     vector<int> nums = read(input_file, n);
-    sort_adelina(nums);
+    bucketSort(nums);
     print_to_file(output_file, nums);
 
     analyse();

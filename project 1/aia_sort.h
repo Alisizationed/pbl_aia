@@ -4,7 +4,7 @@
 
 using namespace std;
 
-void sort_adelina(vector<int> &nums);
+void bucketSort(vector<int> &nums);
 
 void timSort(vector<int> &nums);
 
