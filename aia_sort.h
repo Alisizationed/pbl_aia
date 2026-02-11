@@ -12,7 +12,7 @@ void sort_anastasia(vector<int> &nums);
 
 void sort_andreea(vector<int> &nums);
 
-void sort_diana(vector<int> &nums);
+void shell_sort(vector<int> &nums);
 
 void sort_magda(vector<int> &nums);
 
