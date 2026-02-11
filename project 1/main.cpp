@@ -36,13 +36,12 @@ void analyse() {
 }
 
 int main() {
-    string input_file = "input.txt";
-    string output_file = "output.txt";
-    long n = 100; // number of numbers
+    string folder = "sorting_tests/";
+    string input_file = folder + "input_ascending_100.txt";
 
-    vector<int> nums = read(input_file, n);
-    bucketSort(nums);
-    print_to_file(output_file, nums);
+    vector<int> data = read(input_file);
+    bucketSort(data);
+    print_to_file("output.txt", data);
 
     analyse();
 
