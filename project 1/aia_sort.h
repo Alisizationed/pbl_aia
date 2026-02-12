@@ -10,12 +10,12 @@ void timSort(vector<int> &nums);
 
 void heap_sort(vector<int> &nums);
 
-void sort_andreea(vector<int> &nums);
+void sortArray(vector<int> &nums);
 
 void sort_diana(vector<int> &nums);
 
 void sort_magda(vector<int> &nums);
 
-void sort_milena(vector<int> &nums);
+void radixSort(vector<int> &nums);
 
 #endif //PROJECT_1_AIA_SORT_H

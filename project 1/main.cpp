@@ -8,16 +8,40 @@
 #include "aia_io.h"
 
 using namespace std;
+using SortFunc = function<void(vector<int>&)>;
+
+struct Algorithm {
+    string name;
+    SortFunc func;
+};
 
 void check_file(pair<long, string> filename) {
     vector<int> nums = read(filename.second + "input_" + to_string(filename.first) + ".txt");
+    vector<Algorithm> algorithms = {
+        {"anastasia", heap_sort},
+        // {"adelina", bucketSort},
+        {"ana", timSort},
+        {"andreea", sortArray},
+        {"milena", radixSort},
+        // {"madalina", },
+        // {"diana", }
+    };
+    vector<tuple<long long, int, string>> results;
 
-    run_sort_and_save(nums, "anastasia", filename.second, "output_" + to_string(filename.first), heap_sort);
+    for (auto &algo : algorithms) {
+        results.push_back(
+            make_tuple(
+                run_sort_and_save(nums, algo.name, filename.second, "output_" + to_string(filename.first), algo.func),
+                filename.first,
+                algo.name
+            )
+        );
+    }
 }
 
 void analyse() {
     vector<long> input_filenames = {
-        100,1000,10000,100000,1000000
+        100, 1000, 10000, 100000, 1000000
     };
     vector<string> folders = {
         "/tests_ascending/",
@@ -33,12 +57,9 @@ void analyse() {
 }
 
 int main() {
-
-    int i;
-
     analyse();
 
+    int i;
     scanf("%d", &i);
-
     return 0;
 }

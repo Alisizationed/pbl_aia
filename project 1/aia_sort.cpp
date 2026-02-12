@@ -5,7 +5,7 @@
 using namespace std;
 
 // Adelina - Bucket Sort
-void insertionSort(vector<int>& bucket) {
+void insertionSort(vector<int> &bucket) {
     for (int i = 1; i < bucket.size(); ++i) {
         int key = bucket[i];
         int j = i - 1;
@@ -17,13 +17,13 @@ void insertionSort(vector<int>& bucket) {
     }
 }
 
-void bucketSort(vector<int>& nums) {
+void bucketSort(vector<int> &nums) {
     int n = nums.size();
     if (n <= 1) return;
 
     int max_val = *max_element(nums.begin(), nums.end());
 
-    vector<vector<int>> b(n);
+    vector<vector<int> > b(n);
 
     for (int i = 0; i < n; i++) {
         int bi = (nums[i] * n) / (max_val + 1);
@@ -36,7 +36,7 @@ void bucketSort(vector<int>& nums) {
 
     int index = 0;
     for (int i = 0; i < n; i++) {
-        for (int j : b[i]) {
+        for (int j: b[i]) {
             nums[index++] = j;
         }
     }
@@ -47,7 +47,7 @@ void bucketSort(vector<int>& nums) {
 const int RUN = 32;
 
 // Insertion Sort for small subarrays
-void insertionSort(vector<int>& arr, int left, int right) {
+void insertionSort(vector<int> &arr, int left, int right) {
     for (int i = left + 1; i <= right; i++) {
         int temp = arr[i];
         int j = i - 1;
@@ -60,7 +60,7 @@ void insertionSort(vector<int>& arr, int left, int right) {
 }
 
 // Merge two sorted runs
-void merge(vector<int>& arr, int l, int m, int r) {
+void merge(vector<int> &arr, int l, int m, int r) {
     int len1 = m - l + 1, len2 = r - m;
     vector<int> left(len1), right(len2);
 
@@ -99,7 +99,9 @@ void timSort(vector<int> &nums) {
     }
 }
 
-void heapify(vector<int>& nums, int n, int i) {
+// Anastasia
+
+void heapify(vector<int> &nums, int n, int i) {
     int largest = i;
     int l = 2 * i + 1;
     int r = 2 * i + 2;
@@ -113,7 +115,7 @@ void heapify(vector<int>& nums, int n, int i) {
     }
 }
 
-void heap_sort(vector<int>& nums) {
+void heap_sort(vector<int> &nums) {
     int n = nums.size();
 
     for (int i = n / 2 - 1; i >= 0; i--) {
@@ -126,12 +128,10 @@ void heap_sort(vector<int>& nums) {
     }
 }
 
-
-// TODO: Implement sorting algorithm
 //Andreea
 
 int partition(vector<int> &nums, int low, int high) {
-    int pivot = nums[high];   // choose last element as pivot
+    int pivot = nums[high]; // choose last element as pivot
     int i = low - 1;
 
     for (int j = low; j < high; j++) {
@@ -165,42 +165,37 @@ void sort_diana(vector<int> &nums);
 // TODO: Implement sorting algorithm
 void sort_magda(vector<int> &nums);
 
-// TODO: Implement sorting algorithm
 //Milena
-void radixSort(int array[], int n){
-    int *temp=new int[n];
+void radixSort(vector<int> &nums) {
+    int maxVal = *max_element(nums.begin(), nums.end());
+    int minVal = *min_element(nums.begin(), nums.end());
 
-    int minVal=array[0], maxVal=array[0];
-    for(int i=1; i<n; i++){
-    if(array[i]>maxVal) maxVal=array[i];
-    if(array[i]<minVal) minVal=array[i];
-    }
+    int shift = (minVal < 0) ? -minVal : 0;
 
-    int shift=(minVal<0)? -minVal:0;
-    for(int i=0; i<n; i++)
-        array[i]+=shift;
-    maxVal+=shift;
+    for (int i = 0; i < nums.size(); i++)
+        nums[i] += shift;
 
-    for(int exp=1; maxVal/exp>0; exp*=10){
-        int count[10]={0};
+    maxVal += shift;
+    vector<int> temp(maxVal);
 
-        for(int i=0; i<n; i++)
-            count[(array[i]/exp)%10]++;
+    for (int exp = 1; maxVal / exp > 0; exp *= 10) {
+        int count[10] = {0};
 
-        for(int i=0; i<10; i++)
-            count[i]+=count[i-1];
+        for (int i = 0; i < nums.size(); i++)
+            count[(nums[i] / exp) % 10]++;
 
-        for(int i=n-1; i>=0; i--){
-            int d=(array[i]/exp)%10;
-            temp[--count[d]]=array[i];
+        for (int i = 0; i < 10; i++)
+            count[i] += count[i - 1];
+
+        for (int i = nums.size() - 1; i >= 0; i--) {
+            int d = (nums[i] / exp) % 10;
+            temp[--count[d]] = nums[i];
         }
 
-        for(int i=0; i<n; i++)
-            array[i]=temp[i];
+        for (int i = 0; i < nums.size(); i++)
+            nums[i] = temp[i];
     }
 
-    for(int i=0; i<n; i++)
-        array[i]-=shift;
-
-    delete[] temp;
+    for (int i = 0; i < nums.size(); i++)
+        nums[i] -= shift;
 }

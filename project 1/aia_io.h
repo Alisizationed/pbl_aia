@@ -20,7 +20,7 @@ vector<int> read(string filename);
 
 void print_to_file(string filename, vector<int> a);
 
-void run_sort_and_save(
+long long run_sort_and_save(
     const vector<int> &nums,
     const string &algorithm_name,
     const string &folder_path,
