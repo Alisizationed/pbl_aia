@@ -55,7 +55,7 @@ void run_sort_and_save(
         sort_func(temp);
     });
 
-    printf("Size: %ld | %s Sort Time: %lld µs\n", temp.size(), algorithm_name.c_str(), time_taken);
+    printf("Size: %ld | %s Sort Time: %lld ms\n", temp.size(), algorithm_name.c_str(), time_taken);
 
     string output_filename = folder_path + algorithm_name + "/" + file_prefix + ".txt";
     print_to_file(output_filename, temp);

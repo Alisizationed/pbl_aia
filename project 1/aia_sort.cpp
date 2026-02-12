@@ -99,31 +99,25 @@ void timSort(vector<int> &nums) {
     }
 }
 
-void heapify(vector<int> &nums, int n, int i) {
+void heapify(vector<int>& nums, int n, int i) {
     int largest = i;
-
     int l = 2 * i + 1;
     int r = 2 * i + 2;
 
-    if (l < n && nums[l] > nums[largest]) {
-        largest = l;
-    }
+    if (l < n && nums[l] > nums[largest]) largest = l;
+    if (r < n && nums[r] > nums[largest]) largest = r;
 
-    if (r < nums.size() && nums[r] > nums[largest]) {
-        largest = r;
-    }
     if (largest != i) {
-        swap(nums[largest], nums[i]);
+        swap(nums[i], nums[largest]);
         heapify(nums, n, largest);
     }
 }
 
-// TODO: Optimize Heap Sort
-void heap_sort(vector<int> &nums) {
+void heap_sort(vector<int>& nums) {
     int n = nums.size();
 
-    for (int i = 0; i < n / 2 - 1; i++) {
-        heapify(nums, nums.size(), i);
+    for (int i = n / 2 - 1; i >= 0; i--) {
+        heapify(nums, n, i);
     }
 
     for (int i = n - 1; i > 0; i--) {
@@ -131,6 +125,7 @@ void heap_sort(vector<int> &nums) {
         heapify(nums, i, 0);
     }
 }
+
 
 // TODO: Implement sorting algorithm
 //Andreea

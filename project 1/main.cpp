@@ -12,7 +12,7 @@ using namespace std;
 void check_file(pair<long, string> filename) {
     vector<int> nums = read(filename.second + "input_" + to_string(filename.first) + ".txt");
 
-    run_sort_and_save(nums, "Anastasia", "output_folder/", "output_1000", heap_sort);
+    run_sort_and_save(nums, "anastasia", filename.second, "output_" + to_string(filename.first), heap_sort);
 }
 
 void analyse() {
