@@ -1,13 +1,13 @@
 #include "aia_sort.h"
 #include <vector>
 #include <algorithm>
+#include <cstdio>
 using namespace std;
 
-// TODO: Implement sorting algorithm 
 // Adelina - Bucket Sort
-void insertionSort(vector<float>& bucket) {
+void insertionSort(vector<int>& bucket) {
     for (int i = 1; i < bucket.size(); ++i) {
-        float key = bucket[i];
+        int key = bucket[i];
         int j = i - 1;
         while (j >= 0 && bucket[j] > key) {
             bucket[j + 1] = bucket[j];
@@ -17,12 +17,16 @@ void insertionSort(vector<float>& bucket) {
     }
 }
 
-void bucketSort(vector<int> &nums) {
+void bucketSort(vector<int>& nums) {
     int n = nums.size();
-    vector<float> b[n];
+    if (n <= 1) return;
+
+    int max_val = *max_element(nums.begin(), nums.end());
+
+    vector<vector<int>> b(n);
 
     for (int i = 0; i < n; i++) {
-        int bi = n * nums[i];
+        int bi = (nums[i] * n) / (max_val + 1);
         b[bi].push_back(nums[i]);
     }
 
@@ -32,14 +36,13 @@ void bucketSort(vector<int> &nums) {
 
     int index = 0;
     for (int i = 0; i < n; i++) {
-        for (int j = 0; j < b[i].size(); j++) {
-            nums[index++] = b[i][j];
+        for (int j : b[i]) {
+            nums[index++] = j;
         }
     }
 }
 
 
-// TODO: Implement sorting algorithm
 //Ana
 const int RUN = 32;
 

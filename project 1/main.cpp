@@ -10,40 +10,35 @@
 using namespace std;
 
 void check_file(pair<long, string> filename) {
-    vector<int> nums = read(filename.second, filename.first);
+    vector<int> nums = read(filename.second + "input_" + to_string(filename.first) + ".txt");
 
-    // TODO: Add benchmarking for each sorting algorithm
-    vector<int> nums_adelina = nums;
-    long long time_adelina = measure([&]() {
-        bucketSort(nums_adelina);
-    });
-
-    // TODO: Enhance printing
-    printf("Size: %ld | Adelina Sort Time: %lld ms\n", filename.first, time_adelina);
-
-    // TODO: Read output filename
-    string output_filename = "output_" + to_string(filename.first) + ".txt";
-    print_to_file(output_filename, nums_adelina);
+    run_sort_and_save(nums, "Anastasia", "output_folder/", "output_1000", heap_sort);
 }
 
-// TODO: Implement the main logic
 void analyse() {
-    // TODO: Add testfiles' filenames
-    vector<pair<long, string> > input_filenames = {}
-    for (pair<long, string> &filename: input_filenames) {
-        check_file(filename);
+    vector<long> input_filenames = {
+        100,1000,10000,100000,1000000
+    };
+    vector<string> folders = {
+        "/tests_ascending/",
+        "/tests_descending/",
+        "/tests_random/"
+    };
+    string main_folder = "sorting_tests/";
+    for (long &filesize: input_filenames) {
+        for (string &folder : folders) {
+            check_file(make_pair(filesize, main_folder + folder));
+        }
     }
 }
 
 int main() {
-    string folder = "sorting_tests/";
-    string input_file = folder + "input_ascending_100.txt";
 
-    vector<int> data = read(input_file);
-    bucketSort(data);
-    print_to_file("output.txt", data);
+    int i;
 
     analyse();
 
+    scanf("%d", &i);
+
     return 0;
-    }
+}
