@@ -17,9 +17,9 @@ void check_file(pair<long, string> filename, vector<tuple<long long, long, strin
         {"anastasia", heap_sort},
         // {"adelina", bucketSort},
         {"ana", timSort},
-        {"andreea", sortArray},
-        {"milena", radixSort},
-        {"madalina", bubble_sort},
+        // {"andreea", sortArray},
+        // {"milena", radixSort},
+        // {"madalina", bubble_sort},
         // {"diana", }
     };
 
@@ -44,15 +44,20 @@ void analyse() {
         "/tests_descending/",
         "/tests_random/"
     };
-    vector<tuple<long long, long, string>> results;
+    vector<vector<tuple<long long, long, string>>> results(input_filenames.size() * folders.size());
     string main_folder = "sorting_tests/";
+    int i = 0;
     for (long &filesize: input_filenames) {
         for (string &folder : folders) {
-            check_file(make_pair(filesize, main_folder + folder), results);
+            check_file(make_pair(filesize, main_folder + folder), results[i]);
+            sort(results[i].begin(), results[i].end());
+            tuple<long long, long, string> &best = results[i][0];
+            cout << "The best: "
+                 << get<2>(best) << " "
+                 << get<0>(best) << "ms\n";
+            i++;
         }
     }
-    sort(results.begin(), results.end());
-    cout << get<0>(results[0]) << " " << get<0>(results[1]) << " " << get<0>(results[2]) << endl;
 }
 
 int main() {
