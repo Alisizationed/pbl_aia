@@ -2,40 +2,29 @@
 #include <bits/stdc++.h>
 using namespace std;
 
-// Adelina - Bucket Sort
-void bucketSort(vector<int>& arr) {
-    int bucketCount = 10;
-    if (arr.empty()) return;
+// Adelina - Count Sort
+void countSort(vector<int>& arr) {
+    int n = arr.size();
 
-    int minVal = arr[0];
-    int maxVal = arr[0];
-    for (int x : arr) {
-        if (x < minVal) minVal = x;
-        if (x > maxVal) maxVal = x;
+    int maxval = 0;
+    for (int i = 0; i < n; i++)
+        maxval = max(maxval, arr[i]);
+
+    vector<int> cntArr(maxval + 1, 0);
+
+    for (int i = 0; i < n; i++)
+        cntArr[arr[i]]++;
+
+    for (int i = 1; i <= maxval; i++)
+        cntArr[i] += cntArr[i - 1];
+
+    vector<int> ans(n);
+    for (int i = n - 1; i >= 0; i--) {
+        ans[cntArr[arr[i]] - 1] = arr[i];
+        cntArr[arr[i]]--;
     }
-
-    vector<vector<int>> buckets(bucketCount);
-
-    double range = static_cast<double>(maxVal - minVal + 1) / bucketCount;
-
-    for (int x : arr) {
-        int index = static_cast<int>((x - minVal) / range);
-        if (index == bucketCount) index--;
-        buckets[index].push_back(x);
-    }
-
-    for (auto& bucket : buckets) {
-        sort(bucket.begin(), bucket.end());
-    }
-
-    int k = 0;
-    for (const auto& bucket : buckets) {
-        for (int x : bucket) {
-            arr[k++] = x;
-        }
-    }
+    arr = ans;
 }
-
 //Ana
 const int RUN = 32;
 

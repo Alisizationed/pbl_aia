@@ -4,7 +4,7 @@
 
 using namespace std;
 
-void bucketSort(vector<int> &nums);
+void countSort(vector<int> &nums);
 
 void timSort(vector<int> &nums);
 
