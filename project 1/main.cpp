@@ -1,9 +1,5 @@
 #pragma GCC optimize("O3,unroll-loops")
-#include <cstdio>
-#include <iostream>
-#include <string>
-#include <vector>
-#include <fstream>
+#include <bits/stdc++.h>
 #include "aia_sort.h"
 #include "aia_io.h"
 
@@ -15,18 +11,17 @@ struct Algorithm {
     SortFunc func;
 };
 
-void check_file(pair<long, string> filename) {
+void check_file(pair<long, string> filename, vector<tuple<long long, long, string>> &results) {
     vector<int> nums = read(filename.second + "input_" + to_string(filename.first) + ".txt");
     vector<Algorithm> algorithms = {
         {"anastasia", heap_sort},
         // {"adelina", bucketSort},
         {"ana", timSort},
         {"andreea", sortArray},
-        {"milena", radixSort},
+        // {"milena", radixSort},
         // {"madalina", },
         // {"diana", }
     };
-    vector<tuple<long long, int, string>> results;
 
     for (auto &algo : algorithms) {
         results.push_back(
@@ -48,12 +43,15 @@ void analyse() {
         "/tests_descending/",
         "/tests_random/"
     };
+    vector<tuple<long long, long, string>> results;
     string main_folder = "sorting_tests/";
     for (long &filesize: input_filenames) {
         for (string &folder : folders) {
-            check_file(make_pair(filesize, main_folder + folder));
+            check_file(make_pair(filesize, main_folder + folder), results);
         }
     }
+    sort(results.begin(), results.end());
+    cout << get<0>(results[0]) << " " << get<0>(results[1]) << " " << get<0>(results[2]) << endl;
 }
 
 int main() {

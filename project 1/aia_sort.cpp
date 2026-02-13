@@ -1,7 +1,5 @@
 #include "aia_sort.h"
-#include <vector>
-#include <algorithm>
-#include <cstdio>
+#include <bits/stdc++.h>
 using namespace std;
 
 // Adelina - Bucket Sort
@@ -167,24 +165,27 @@ void sort_magda(vector<int> &nums);
 
 //Milena
 void radixSort(vector<int> &nums) {
+    if (nums.empty()) return;
+
     int maxVal = *max_element(nums.begin(), nums.end());
     int minVal = *min_element(nums.begin(), nums.end());
 
     int shift = (minVal < 0) ? -minVal : 0;
 
-    for (int i = 0; i < nums.size(); i++)
-        nums[i] += shift;
+    for (int &x : nums)
+        x += shift;
 
     maxVal += shift;
-    vector<int> temp(maxVal);
+
+    vector<int> temp(nums.size());
 
     for (int exp = 1; maxVal / exp > 0; exp *= 10) {
         int count[10] = {0};
 
-        for (int i = 0; i < nums.size(); i++)
-            count[(nums[i] / exp) % 10]++;
+        for (int x : nums)
+            count[(x / exp) % 10]++;
 
-        for (int i = 0; i < 10; i++)
+        for (int i = 1; i < 10; i++)
             count[i] += count[i - 1];
 
         for (int i = nums.size() - 1; i >= 0; i--) {
@@ -192,10 +193,9 @@ void radixSort(vector<int> &nums) {
             temp[--count[d]] = nums[i];
         }
 
-        for (int i = 0; i < nums.size(); i++)
-            nums[i] = temp[i];
+        nums = temp;
     }
 
-    for (int i = 0; i < nums.size(); i++)
-        nums[i] -= shift;
+    for (int &x : nums)
+        x -= shift;
 }

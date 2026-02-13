@@ -1,9 +1,6 @@
 #include "aia_io.h"
 
-#include <cstdio>
-#include <iostream>
-#include <string>
-#include <vector>
+#include <bits/stdc++.h>
 
 using namespace std;
 
@@ -24,7 +21,7 @@ vector<int> read(string filename) {
     return a;
 }
 
-void print_to_file(string filename, vector<int> a) {
+void print_to_file(string filename, vector<int> &a) {
     if (filename.empty()) return;
 
     if (filename == "stdout") {
