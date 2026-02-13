@@ -60,3 +60,7 @@ long long run_sort_and_save(
 
     return time_taken;
 }
+
+void standard_sort(vector<int> &nums) {
+    sort(nums.begin(), nums.end());
+}

@@ -18,4 +18,6 @@ void bubble_sort(vector<int> &nums);
 
 void radixSort(vector<int> &nums);
 
+void standard_sort(vector<int> &nums);
+
 #endif //PROJECT_1_AIA_SORT_H

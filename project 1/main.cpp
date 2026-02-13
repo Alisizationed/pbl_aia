@@ -15,12 +15,13 @@ void check_file(pair<long, string> filename, vector<tuple<long long, long, strin
     vector<int> nums = read(filename.second + "input_" + to_string(filename.first) + ".txt");
     vector<Algorithm> algorithms = {
         {"anastasia", heap_sort},
-        // {"adelina", bucketSort},
+        {"adelina", bucketSort},
         {"ana", timSort},
         // {"andreea", sortArray},
         // {"milena", radixSort},
         // {"madalina", bubble_sort},
-        // {"diana", }
+        // {"diana", },
+        {"prebuilt", standard_sort},
     };
 
     cout << endl << filename.second << endl;
@@ -40,9 +41,9 @@ void analyse() {
         100, 1000, 10000, 100000, 1000000
     };
     vector<string> folders = {
-        "/tests_ascending/",
-        "/tests_descending/",
-        "/tests_random/"
+        "tests_ascending/",
+        "tests_descending/",
+        "tests_random/"
     };
     vector<vector<tuple<long long, long, string>>> results(input_filenames.size() * folders.size());
     string main_folder = "sorting_tests/";

@@ -1,45 +1,41 @@
 #include "aia_sort.h"
-#include <bits/stdc++.h>
+#include <vector>
+#include <algorithm>
 using namespace std;
 
 // Adelina - Bucket Sort
-void insertionSort(vector<int> &bucket) {
-    for (int i = 1; i < bucket.size(); ++i) {
-        int key = bucket[i];
-        int j = i - 1;
-        while (j >= 0 && bucket[j] > key) {
-            bucket[j + 1] = bucket[j];
-            j--;
-        }
-        bucket[j + 1] = key;
-    }
-}
+void bucketSort(vector<int>& arr) {
+    int bucketCount = 10;
+    if (arr.empty()) return;
 
-void bucketSort(vector<int> &nums) {
-    int n = nums.size();
-    if (n <= 1) return;
-
-    int max_val = *max_element(nums.begin(), nums.end());
-
-    vector<vector<int> > b(n);
-
-    for (int i = 0; i < n; i++) {
-        int bi = (nums[i] * n) / (max_val + 1);
-        b[bi].push_back(nums[i]);
+    int minVal = arr[0];
+    int maxVal = arr[0];
+    for (int x : arr) {
+        if (x < minVal) minVal = x;
+        if (x > maxVal) maxVal = x;
     }
 
-    for (int i = 0; i < n; i++) {
-        insertionSort(b[i]);
+    vector<vector<int>> buckets(bucketCount);
+
+    double range = static_cast<double>(maxVal - minVal + 1) / bucketCount;
+
+    for (int x : arr) {
+        int index = static_cast<int>((x - minVal) / range);
+        if (index == bucketCount) index--;
+        buckets[index].push_back(x);
     }
 
-    int index = 0;
-    for (int i = 0; i < n; i++) {
-        for (int j: b[i]) {
-            nums[index++] = j;
+    for (auto& bucket : buckets) {
+        sort(bucket.begin(), bucket.end());
+    }
+
+    int k = 0;
+    for (const auto& bucket : buckets) {
+        for (int x : bucket) {
+            arr[k++] = x;
         }
     }
 }
-
 
 //Ana
 const int RUN = 32;
@@ -101,6 +97,7 @@ void timSort(vector<int> &nums) {
 
 void heapify(vector<int> &nums, int n, int i) {
     int largest = i;
+
     int l = 2 * i + 1;
     int r = 2 * i + 2;
 
