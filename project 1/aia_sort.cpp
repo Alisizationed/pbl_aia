@@ -1,6 +1,5 @@
 #include "aia_sort.h"
-#include <vector>
-#include <algorithm>
+#include <bits/stdc++.h>
 using namespace std;
 
 // Adelina - Bucket Sort
