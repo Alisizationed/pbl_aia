@@ -1,40 +1,47 @@
 #include "aia_sort.h"
 #include <vector>
 #include <algorithm>
-#include <cmath>
 using namespace std;
 
-// TODO: Implement sorting algorithm 
-// Adelina - Count Sort
-void countSort(vector<int>& arr) {
-    int n = arr.size();
+// Adelina - Bucket Sort
+void bucketSort(vector<int>& arr) {
+    int bucketCount = 10;
+    if (arr.empty()) return;
 
-    int maxval = 0;
-    for (int i = 0; i < n; i++)
-        maxval = max(maxval, arr[i]);
-
-    vector<int> cntArr(maxval + 1, 0);
-
-    for (int i = 0; i < n; i++)
-        cntArr[arr[i]]++;
-
-    for (int i = 1; i <= maxval; i++)
-        cntArr[i] += cntArr[i - 1];
-
-    vector<int> ans(n);
-    for (int i = n - 1; i >= 0; i--) {
-        ans[cntArr[arr[i]] - 1] = arr[i];
-        cntArr[arr[i]]--;
+    int minVal = arr[0];
+    int maxVal = arr[0];
+    for (int x : arr) {
+        if (x < minVal) minVal = x;
+        if (x > maxVal) maxVal = x;
     }
-    arr = ans;
+
+    vector<vector<int>> buckets(bucketCount);
+
+    double range = static_cast<double>(maxVal - minVal + 1) / bucketCount;
+
+    for (int x : arr) {
+        int index = static_cast<int>((x - minVal) / range);
+        if (index == bucketCount) index--;
+        buckets[index].push_back(x);
+    }
+
+    for (auto& bucket : buckets) {
+        sort(bucket.begin(), bucket.end());
+    }
+
+    int k = 0;
+    for (const auto& bucket : buckets) {
+        for (int x : bucket) {
+            arr[k++] = x;
+        }
+    }
 }
 
-// TODO: Implement sorting algorithm
 //Ana
 const int RUN = 32;
 
 // Insertion Sort for small subarrays
-void insertionSort(vector<int>& arr, int left, int right) {
+void insertionSort(vector<int> &arr, int left, int right) {
     for (int i = left + 1; i <= right; i++) {
         int temp = arr[i];
         int j = i - 1;
@@ -47,7 +54,7 @@ void insertionSort(vector<int>& arr, int left, int right) {
 }
 
 // Merge two sorted runs
-void merge(vector<int>& arr, int l, int m, int r) {
+void merge(vector<int> &arr, int l, int m, int r) {
     int len1 = m - l + 1, len2 = r - m;
     vector<int> left(len1), right(len2);
 
@@ -86,31 +93,28 @@ void timSort(vector<int> &nums) {
     }
 }
 
+// Anastasia
+
 void heapify(vector<int> &nums, int n, int i) {
     int largest = i;
 
     int l = 2 * i + 1;
     int r = 2 * i + 2;
 
-    if (l < n && nums[l] > nums[largest]) {
-        largest = l;
-    }
+    if (l < n && nums[l] > nums[largest]) largest = l;
+    if (r < n && nums[r] > nums[largest]) largest = r;
 
-    if (r < nums.size() && nums[r] > nums[largest]) {
-        largest = r;
-    }
     if (largest != i) {
-        swap(nums[largest], nums[i]);
+        swap(nums[i], nums[largest]);
         heapify(nums, n, largest);
     }
 }
 
-// TODO: Optimize Heap Sort
 void heap_sort(vector<int> &nums) {
     int n = nums.size();
 
-    for (int i = 0; i < n / 2 - 1; i++) {
-        heapify(nums, nums.size(), i);
+    for (int i = n / 2 - 1; i >= 0; i--) {
+        heapify(nums, n, i);
     }
 
     for (int i = n - 1; i > 0; i--) {
@@ -119,11 +123,10 @@ void heap_sort(vector<int> &nums) {
     }
 }
 
-// TODO: Implement sorting algorithm
 //Andreea
 
 int partition(vector<int> &nums, int low, int high) {
-    int pivot = nums[high];   // choose last element as pivot
+    int pivot = nums[high]; // choose last element as pivot
     int i = low - 1;
 
     for (int j = low; j < high; j++) {
@@ -152,9 +155,24 @@ void sortArray(vector<int> &nums) {
 }
 
 // TODO: Implement sorting algorithm
-void sort_diana(vector<int> &nums);
+//Diana
+void shell_sort(vector<int> &nums) {
+    int n = nums.size();
 
-// TODO: Implement sorting algorithm
+    for(int gap = n / 2; gap > 0; gap /= 2) {
+        for(int i = gap; i < n; i ++) {
+            int temp = nums[i];
+            int j = i;
+
+            while (j >= gap && nums[j - gap] > temp) {
+                nums[j] = nums[j - gap];
+                j -= gap;
+            }
+            nums[j] = temp;
+        }
+    }
+}
+
 // Magda - Bubble sort
 void bubble_sort(vector<int> &nums) {
     int n = nums.size();
@@ -174,42 +192,39 @@ void bubble_sort(vector<int> &nums) {
     }
 }
 
-// TODO: Implement sorting algorithm
 //Milena
-void radixSort(int array[], int n){
-    int *temp=new int[n];
+void radixSort(vector<int> &nums) {
+    if (nums.empty()) return;
 
-    int minVal=array[0], maxVal=array[0];
-    for(int i=1; i<n; i++){
-    if(array[i]>maxVal) maxVal=array[i];
-    if(array[i]<minVal) minVal=array[i];
-    }
+    int maxVal = *max_element(nums.begin(), nums.end());
+    int minVal = *min_element(nums.begin(), nums.end());
 
-    int shift=(minVal<0)? -minVal:0;
-    for(int i=0; i<n; i++)
-        array[i]+=shift;
-    maxVal+=shift;
+    int shift = (minVal < 0) ? -minVal : 0;
 
-    for(int exp=1; maxVal/exp>0; exp*=10){
-        int count[10]={0};
+    for (int &x : nums)
+        x += shift;
 
-        for(int i=0; i<n; i++)
-            count[(array[i]/exp)%10]++;
+    maxVal += shift;
 
-        for(int i=0; i<10; i++)
-            count[i]+=count[i-1];
+    vector<int> temp(nums.size());
 
-        for(int i=n-1; i>=0; i--){
-            int d=(array[i]/exp)%10;
-            temp[--count[d]]=array[i];
+    for (int exp = 1; maxVal / exp > 0; exp *= 10) {
+        int count[10] = {0};
+
+        for (int x : nums)
+            count[(x / exp) % 10]++;
+
+        for (int i = 1; i < 10; i++)
+            count[i] += count[i - 1];
+
+        for (int i = nums.size() - 1; i >= 0; i--) {
+            int d = (nums[i] / exp) % 10;
+            temp[--count[d]] = nums[i];
         }
 
-        for(int i=0; i<n; i++)
-            array[i]=temp[i];
+        nums = temp;
     }
 
-    for(int i=0; i<n; i++)
-        array[i]-=shift;
-
-    delete[] temp;
+    for (int &x : nums)
+        x -= shift;
 }
