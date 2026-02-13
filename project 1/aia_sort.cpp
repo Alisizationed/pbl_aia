@@ -160,7 +160,6 @@ void sortArray(vector<int> &nums) {
 // TODO: Implement sorting algorithm
 void sort_diana(vector<int> &nums);
 
-// TODO: Implement sorting algorithm
 // Magda - Bubble sort
 void bubble_sort(vector<int> &nums) {
     int n = nums.size();

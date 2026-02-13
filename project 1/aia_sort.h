@@ -14,7 +14,7 @@ void sortArray(vector<int> &nums);
 
 void sort_diana(vector<int> &nums);
 
-void sort_magda(vector<int> &nums);
+void bubble_sort(vector<int> &nums);
 
 void radixSort(vector<int> &nums);
 

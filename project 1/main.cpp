@@ -18,11 +18,12 @@ void check_file(pair<long, string> filename, vector<tuple<long long, long, strin
         // {"adelina", bucketSort},
         {"ana", timSort},
         {"andreea", sortArray},
-        // {"milena", radixSort},
-        // {"madalina", },
+        {"milena", radixSort},
+        {"madalina", bubble_sort},
         // {"diana", }
     };
 
+    cout << endl << filename.second << endl;
     for (auto &algo : algorithms) {
         results.push_back(
             make_tuple(
