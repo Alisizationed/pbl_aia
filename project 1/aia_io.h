@@ -1,9 +1,6 @@
 #ifndef PROJECT_1_AIA_IO_H
 #define PROJECT_1_AIA_IO_H
-#include <chrono>
-#include <string>
-#include <vector>
-#include <functional>
+#include <bits/stdc++.h>
 
 using namespace std;
 
@@ -18,9 +15,9 @@ long long measure(Func f) {
 
 vector<int> read(string filename);
 
-void print_to_file(string filename, vector<int> a);
+void print_to_file(string filename, vector<int> &a);
 
-void run_sort_and_save(
+long long run_sort_and_save(
     const vector<int> &nums,
     const string &algorithm_name,
     const string &folder_path,

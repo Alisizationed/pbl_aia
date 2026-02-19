@@ -1,53 +1,33 @@
 #include "aia_sort.h"
-#include <vector>
-#include <algorithm>
-#include <cstdio>
+#include <bits/stdc++.h>
 using namespace std;
 
-// Adelina - Bucket Sort
-void insertionSort(vector<int>& bucket) {
-    for (int i = 1; i < bucket.size(); ++i) {
-        int key = bucket[i];
-        int j = i - 1;
-        while (j >= 0 && bucket[j] > key) {
-            bucket[j + 1] = bucket[j];
-            j--;
-        }
-        bucket[j + 1] = key;
+// Adelina - Count Sort
+void countSort(vector<int>& arr) {
+    int n = arr.size();
+
+    int maxval = *max_element(arr.begin(), arr.end());
+
+    vector<int> cntArr(maxval + 1, 0);
+
+    for (int i = 0; i < n; i++)
+        cntArr[arr[i]]++;
+
+    for (int i = 1; i <= maxval; i++)
+        cntArr[i] += cntArr[i - 1];
+
+    vector<int> ans(n);
+    for (int i = n - 1; i >= 0; i--) {
+        ans[cntArr[arr[i]] - 1] = arr[i];
+        cntArr[arr[i]]--;
     }
+    arr = ans;
 }
-
-void bucketSort(vector<int>& nums) {
-    int n = nums.size();
-    if (n <= 1) return;
-
-    int max_val = *max_element(nums.begin(), nums.end());
-
-    vector<vector<int>> b(n);
-
-    for (int i = 0; i < n; i++) {
-        int bi = (nums[i] * n) / (max_val + 1);
-        b[bi].push_back(nums[i]);
-    }
-
-    for (int i = 0; i < n; i++) {
-        insertionSort(b[i]);
-    }
-
-    int index = 0;
-    for (int i = 0; i < n; i++) {
-        for (int j : b[i]) {
-            nums[index++] = j;
-        }
-    }
-}
-
-
 //Ana
 const int RUN = 32;
 
 // Insertion Sort for small subarrays
-void insertionSort(vector<int>& arr, int left, int right) {
+void insertionSort(vector<int> &arr, int left, int right) {
     for (int i = left + 1; i <= right; i++) {
         int temp = arr[i];
         int j = i - 1;
@@ -60,7 +40,7 @@ void insertionSort(vector<int>& arr, int left, int right) {
 }
 
 // Merge two sorted runs
-void merge(vector<int>& arr, int l, int m, int r) {
+void merge(vector<int> &arr, int l, int m, int r) {
     int len1 = m - l + 1, len2 = r - m;
     vector<int> left(len1), right(len2);
 
@@ -99,8 +79,11 @@ void timSort(vector<int> &nums) {
     }
 }
 
-void heapify(vector<int>& nums, int n, int i) {
+// Anastasia
+
+void heapify(vector<int> &nums, int n, int i) {
     int largest = i;
+
     int l = 2 * i + 1;
     int r = 2 * i + 2;
 
@@ -113,7 +96,7 @@ void heapify(vector<int>& nums, int n, int i) {
     }
 }
 
-void heap_sort(vector<int>& nums) {
+void heap_sort(vector<int> &nums) {
     int n = nums.size();
 
     for (int i = n / 2 - 1; i >= 0; i--) {
@@ -126,12 +109,10 @@ void heap_sort(vector<int>& nums) {
     }
 }
 
-
-// TODO: Implement sorting algorithm
 //Andreea
 
 int partition(vector<int> &nums, int low, int high) {
-    int pivot = nums[high];   // choose last element as pivot
+    int pivot = nums[high]; // choose last element as pivot
     int i = low - 1;
 
     for (int j = low; j < high; j++) {
@@ -160,47 +141,76 @@ void sortArray(vector<int> &nums) {
 }
 
 // TODO: Implement sorting algorithm
-void sort_diana(vector<int> &nums);
+//Diana
+void shell_sort(vector<int> &nums) {
+    int n = nums.size();
 
-// TODO: Implement sorting algorithm
-void sort_magda(vector<int> &nums);
+    for(int gap = n / 2; gap > 0; gap /= 2) {
+        for(int i = gap; i < n; i ++) {
+            int temp = nums[i];
+            int j = i;
 
-// TODO: Implement sorting algorithm
-//Milena
-void radixSort(int array[], int n){
-    int *temp=new int[n];
-
-    int minVal=array[0], maxVal=array[0];
-    for(int i=1; i<n; i++){
-    if(array[i]>maxVal) maxVal=array[i];
-    if(array[i]<minVal) minVal=array[i];
+            while (j >= gap && nums[j - gap] > temp) {
+                nums[j] = nums[j - gap];
+                j -= gap;
+            }
+            nums[j] = temp;
+        }
     }
+}
 
-    int shift=(minVal<0)? -minVal:0;
-    for(int i=0; i<n; i++)
-        array[i]+=shift;
-    maxVal+=shift;
+// Magda - Bubble sort
+void bubble_sort(vector<int> &nums) {
+    int n = nums.size();
+    bool swapped;
 
-    for(int exp=1; maxVal/exp>0; exp*=10){
-        int count[10]={0};
+    for (int i = 0; i < n - 1; i++) {
+        swapped = false;
 
-        for(int i=0; i<n; i++)
-            count[(array[i]/exp)%10]++;
+        for (int j = 0; j < n - i - 1; j++) {
+            if (nums[j] > nums[j + 1]) {
+                swap(nums[j], nums[j + 1]);
+                swapped = true;
+            }
+        }
+        if (!swapped)
+            break;
+    }
+}
 
-        for(int i=0; i<10; i++)
-            count[i]+=count[i-1];
+//Milena
+void radixSort(vector<int> &nums) {
+    if (nums.empty()) return;
 
-        for(int i=n-1; i>=0; i--){
-            int d=(array[i]/exp)%10;
-            temp[--count[d]]=array[i];
+    int maxVal = *max_element(nums.begin(), nums.end());
+    int minVal = *min_element(nums.begin(), nums.end());
+
+    int shift = (minVal < 0) ? -minVal : 0;
+
+    for (int &x : nums)
+        x += shift;
+
+    maxVal += shift;
+
+    vector<int> temp(nums.size());
+
+    for (int exp = 1; maxVal / exp > 0; exp *= 10) {
+        int count[10] = {0};
+
+        for (int x : nums)
+            count[(x / exp) % 10]++;
+
+        for (int i = 1; i < 10; i++)
+            count[i] += count[i - 1];
+
+        for (int i = nums.size() - 1; i >= 0; i--) {
+            int d = (nums[i] / exp) % 10;
+            temp[--count[d]] = nums[i];
         }
 
-        for(int i=0; i<n; i++)
-            array[i]=temp[i];
+        nums = temp;
     }
 
-    for(int i=0; i<n; i++)
-        array[i]-=shift;
-
-    delete[] temp;
+    for (int &x : nums)
+        x -= shift;
 }
