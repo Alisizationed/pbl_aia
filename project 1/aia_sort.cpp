@@ -6,9 +6,7 @@ using namespace std;
 void countSort(vector<int>& arr) {
     int n = arr.size();
 
-    int maxval = 0;
-    for (int i = 0; i < n; i++)
-        maxval = max(maxval, arr[i]);
+    int maxval = *max_element(arr.begin(), arr.end());
 
     vector<int> cntArr(maxval + 1, 0);
 
