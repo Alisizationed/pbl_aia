@@ -113,8 +113,20 @@ void heap_sort(vector<int> &nums) {
 
 //Andreea
 
+int median_of_three(vector<int> &nums, int l, int r) {
+    int m = (l + r) / 2;
+
+    if ((nums[l] <= nums[m] && nums[m] <= nums[r]) || (nums[r] <= nums[m] && nums[m] <= nums[l]))
+        return m;
+    if ((nums[m] <= nums[l] && nums[l] <= nums[r]) || (nums[r] <= nums[l] && nums[l] <= nums[m]))
+        return l;
+    return r;
+}
+
 int partition(vector<int> &nums, int low, int high) {
-    int pivot = nums[high]; // choose last element as pivot
+    int pivot_index = median_of_three(nums, low, high);
+    swap(nums[pivot_index], nums[high]);
+    int pivot = nums[high];
     int i = low - 1;
 
     for (int j = low; j < high; j++) {

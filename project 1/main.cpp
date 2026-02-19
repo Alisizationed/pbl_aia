@@ -26,7 +26,7 @@ void check_file(pair<long, string> filename, vector<tuple<long long, long, strin
 
     cout << endl << filename.second << endl;
     for (auto &algo : algorithms) {
-        if ((algo.name == "andreea" || algo.name == "milena" || algo.name == "madalina") && nums.size() >= 1e5)
+        if ((algo.name == "milena" || algo.name == "madalina") && nums.size() >= 1e5)
             continue;
         results.push_back(
             make_tuple(
