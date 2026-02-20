@@ -15,12 +15,13 @@ void check_file(pair<long, string> filename, vector<tuple<long long, long, strin
     vector<int> nums = read(filename.second + "input_" + to_string(filename.first) + ".txt");
     vector<Algorithm> algorithms = {
         {"anastasia", heap_sort},
-        {"adelina", parallel_sort},
+        {"adelina", pigeonholeSort},
         {"ana", timSort},
         {"andreea", sortArray},
         {"milena", radixSort},
         {"madalina", bubble_sort},
         {"diana", shell_sort},
+        {"parallel", parallel_sort},
         {"prebuilt", standard_sort},
     };
 
