@@ -2,140 +2,138 @@
 #include <future>
 #include <thread>
 #include <bits/stdc++.h>
-#include <stdio.h>
 #include <math.h>
 using namespace std;
 
 // Adelina - IntroSort
 // Swap two integers
+// A utility function to swap the values pointed by the two pointers
 void swapValue(int *a, int *b)
 {
-    int temp = *a;
-    *a = *b;
-    *b = temp;
+    int *temp = a;
+    a = b;
+    b = temp;
+    return;
 }
 
-// Insertion sort for small subarrays
-void insertionSort(int arr[], int left, int right)
+/* Function to sort an array using insertion sort*/
+void InsertionSort(int arr[], int *begin, int *end)
 {
-    for (int i = left + 1; i <= right; i++)
+    // Get the left and the right index of the subarray to be sorted
+    int left = begin - arr;
+    int right = end - arr;
+
+    for (int i = left+1; i <= right; i++)
     {
         int key = arr[i];
-        int j = i - 1;
+        int j = i-1;
 
+        /* Move elements of arr[0..i-1], that are
+           greater than key, to one position ahead
+           of their current position */
         while (j >= left && arr[j] > key)
         {
-            arr[j + 1] = arr[j];
-            j--;
+            arr[j+1] = arr[j];
+            j = j-1;
         }
-        arr[j + 1] = key;
+        arr[j+1] = key;
     }
+
+    return;
 }
 
-// Heapify function used by HeapSort
-void heapify(int arr[], int n, int i, int offset)
+// A function to partition the array and return the partition point
+int* Partition(int arr[], int low, int high)
 {
-    int largest = i;
-    int left  = 2 * i + 1;
-    int right = 2 * i + 2;
+    int pivot = arr[high];    // pivot
+    int i = (low - 1);  // Index of smaller element
 
-    if (left < n && arr[offset + left] > arr[offset + largest])
-        largest = left;
-
-    if (right < n && arr[offset + right] > arr[offset + largest])
-        largest = right;
-
-    if (largest != i)
+    for (int j = low; j <= high- 1; j++)
     {
-        swapValue(&arr[offset + i], &arr[offset + largest]);
-        heapify(arr, n, largest, offset);
-    }
-}
-
-// HeapSort used when recursion depth is exceeded
-void heapSort(int arr[], int left, int right)
-{
-    int n = right - left + 1;
-
-    for (int i = n / 2 - 1; i >= 0; i--)
-        heapify(arr, n, i, left);
-
-    for (int i = n - 1; i > 0; i--)
-    {
-        swapValue(&arr[left], &arr[left + i]);
-        heapify(arr, i, 0, left);
-    }
-}
-
-// Median-of-three pivot selection
-int medianOfThree(int arr[], int a, int b, int c)
-{
-    if ((arr[a] < arr[b] && arr[b] < arr[c]) ||
-        (arr[c] < arr[b] && arr[b] < arr[a]))
-        return b;
-
-    if ((arr[b] < arr[a] && arr[a] < arr[c]) ||
-        (arr[c] < arr[a] && arr[a] < arr[b]))
-        return a;
-
-    return c;
-}
-
-// Partition function (QuickSort style)
-int partition(int arr[], int low, int high)
-{
-    int pivot = arr[high];
-    int i = low - 1;
-
-    for (int j = low; j < high; j++)
-    {
+        // If current element is smaller than or equal to pivot
         if (arr[j] <= pivot)
         {
+            // increment index of smaller element
             i++;
-            swapValue(&arr[i], &arr[j]);
+
+            swap(arr[i], arr[j]);
         }
     }
-
-    swapValue(&arr[i + 1], &arr[high]);
-    return i + 1;
+    swap(arr[i + 1], arr[high]);
+    return (arr + i + 1);
 }
 
-// Recursive Introsort utility
-void introsortUtil(int arr[], int left, int right, int depthLimit)
-{
-    int size = right - left + 1;
 
+// A function that find the middle of the  values pointed by the pointers
+// a, b, c and return that pointer
+int *MedianOfThree(int * a, int * b, int * c)
+{
+    if (*a < *b && *b < *c)
+        return (b);
+
+    if (*a < *c && *c <= *b)
+        return (c);
+
+    if (*b <= *a && *a < *c)
+        return (a);
+
+    if (*b < *c && *c <= *a)
+        return (c);
+
+    if (*c <= *a && *a < *b)
+        return (a);
+
+    if (*c <= *b && *b <= *a)
+        return (b);
+}
+
+// A Utility function to perform intro sort
+void IntrosortUtil(int arr[], int * begin,
+                   int * end, int depthLimit)
+{
+    // Count the number of elements
+    int size = end - begin;
+
+    // If partition size is low then do insertion sort
     if (size < 16)
     {
-        insertionSort(arr, left, right);
+        InsertionSort(arr, begin, end);
         return;
     }
 
+    // If the depth is zero use heapsort
     if (depthLimit == 0)
     {
-        heapSort(arr, left, right);
+        make_heap(begin, end+1);
+        sort_heap(begin, end+1);
         return;
     }
 
-    int mid = left + size / 2;
-    int pivotIndex = medianOfThree(arr, left, mid, right);
-    swapValue(&arr[pivotIndex], &arr[right]);
+    // Else use a median-of-three concept to find a good pivot
+    int * pivot = MedianOfThree(begin, begin+size/2, end);
 
-    int p = partition(arr, left, right);
+    // Swap the values pointed by the two pointers
+    swapValue(pivot, end);
 
-    introsortUtil(arr, left, p - 1, depthLimit - 1);
-    introsortUtil(arr, p + 1, right, depthLimit - 1);
+    // Perform Quick Sort
+    int * partitionPoint = Partition(arr, begin-arr, end-arr);
+    IntrosortUtil(arr, begin, partitionPoint-1, depthLimit - 1);
+    IntrosortUtil(arr, partitionPoint + 1, end, depthLimit - 1);
+
+    return;
 }
 
-// Introsort entry function
-void introsort(vector<int> &arr)
+/* Implementation of introsort*/
+void Introsort(vector<int> &nums)
 {
-    int n = sizeof(arr) / sizeof(arr[0]);
-    int depthLimit = 2 * (int)log2(n);
-    introsortUtil(arr, 0, n - 1, depthLimit);
+    int n = sizeof(nums) / sizeof(nums[0]);
+    int depthLimit = 2 * log(n);
+
+    // Perform a recursive Introsort
+    IntrosortUtil(nums, 0, n, depthLimit);
+
+    return;
 }
-
-
 
 //Ana
 const int RUN = 32;
