@@ -4,27 +4,37 @@
 #include <bits/stdc++.h>
 using namespace std;
 
-// Adelina - Count Sort
-void countSort(vector<int>& arr) {
-    int n = arr.size();
-
-    int maxval = *max_element(arr.begin(), arr.end());
-
-    vector<int> cntArr(maxval + 1, 0);
-
-    for (int i = 0; i < n; i++)
-        cntArr[arr[i]]++;
-
-    for (int i = 1; i <= maxval; i++)
-        cntArr[i] += cntArr[i - 1];
-
-    vector<int> ans(n);
-    for (int i = n - 1; i >= 0; i--) {
-        ans[cntArr[arr[i]] - 1] = arr[i];
-        cntArr[arr[i]]--;
+// Adelina - Pigeonhole Sort
+void pigeonholeSort(vector<int> &arr) {
+    int n = sizeof(arr)/sizeof(arr[0]);
+    // Find minimum and maximum
+    int min = arr[0], max = arr[0];
+    for (int i = 1; i < n; i++)
+    {
+        if (arr[i] < min)
+            min = arr[i];
+        if (arr[i] > max)
+            max = arr[i];
     }
-    arr = ans;
+    int range = max - min + 1; // Find range
+
+    // Create an array of vectors. Each vector is a hole that is going to contain matching elements.
+    vector<int> holes[range];
+
+    // Traverse through input array and put every element in its respective hole
+    for (int i = 0; i < n; i++)
+        holes[arr[i]-min].push_back(arr[i]);
+
+    // Traverse through all holes one by one, and put in array.
+    int index = 0;  // index in sorted array
+    for (int i = 0; i < range; i++)
+    {
+        vector<int>::iterator it;
+        for (it = holes[i].begin(); it != holes[i].end(); ++it)
+            arr[index++]  = *it;
+    }
 }
+
 //Ana
 const int RUN = 32;
 

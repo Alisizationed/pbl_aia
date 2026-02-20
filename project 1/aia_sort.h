@@ -4,7 +4,7 @@
 
 using namespace std;
 
-void countSort(vector<int> &nums);
+void pigeonholeSort(vector<int> &nums);
 
 void timSort(vector<int> &nums);
 
