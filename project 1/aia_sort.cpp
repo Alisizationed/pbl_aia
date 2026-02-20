@@ -195,28 +195,40 @@ void timSort(vector<int> &nums) {
 
 // Anastasia
 
+// Function for putting an element from heap to the right place
 void heapify(vector<int> &nums, int n, int i) {
+    // Suppose the parent is i
     int largest = i;
 
+    // Get the left and right child of i
     int l = 2 * i + 1;
     int r = 2 * i + 2;
 
+    // Check if the children are smaller than the parent
+    // If no, the parent is the child
     if (l < n && nums[l] > nums[largest]) largest = l;
     if (r < n && nums[r] > nums[largest]) largest = r;
 
+    // If the largest is not i
     if (largest != i) {
+        // Swap them so they are in the right place
         swap(nums[i], nums[largest]);
+        // Check if the parent is in the right place
         heapify(nums, n, largest);
     }
 }
 
+// Fuction which implements the heap sorting algorithm
 void heap_sort(vector<int> &nums) {
+    // Store the size if the vector
     int n = nums.size();
 
+    // Construct the first heap
     for (int i = n / 2 - 1; i >= 0; i--) {
         heapify(nums, n, i);
     }
 
+    // Sort by extracting the largest element (the root of the heap)
     for (int i = n - 1; i > 0; i--) {
         swap(nums[0], nums[i]);
         heapify(nums, i, 0);
