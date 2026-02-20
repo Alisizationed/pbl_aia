@@ -124,7 +124,7 @@ void IntrosortUtil(int arr[], int * begin,
 }
 
 /* Implementation of introsort*/
-void Introsort(vector<int> &nums)
+void introsort(vector<int> &nums)
 {
     int n = sizeof(nums) / sizeof(nums[0]);
     int depthLimit = 2 * log(n);
