@@ -2,30 +2,140 @@
 #include <future>
 #include <thread>
 #include <bits/stdc++.h>
+#include <stdio.h>
+#include <math.h>
 using namespace std;
 
-// Adelina - Pigeonhole Sort
-void pigeonholeSort(vector<int> &arr) {
-    // Find minimum and maximum
-    int max = *max_element(arr.begin(), arr.end());
-    int min = *min_element(arr.begin(), arr.end());
-    int range = max - min + 1; // Find range
+// Adelina - IntroSort
+// Swap two integers
+void swapValue(int *a, int *b)
+{
+    int temp = *a;
+    *a = *b;
+    *b = temp;
+}
 
-    // Create an array of vectors. Each vector is a hole that is going to contain matching elements.
-    vector<vector<int>> holes(range);
-
-    // Traverse through input array and put every element in its respective hole
-    for (int i : arr)
-        holes[i - min].push_back(i);
-
-    // Traverse through all holes one by one, and put in array.
-    int index = 0;
-    for (const vector<int>& i : holes)
+// Insertion sort for small subarrays
+void insertionSort(int arr[], int left, int right)
+{
+    for (int i = left + 1; i <= right; i++)
     {
-        for (int j : i)
-            arr[index++]  = j;
+        int key = arr[i];
+        int j = i - 1;
+
+        while (j >= left && arr[j] > key)
+        {
+            arr[j + 1] = arr[j];
+            j--;
+        }
+        arr[j + 1] = key;
     }
 }
+
+// Heapify function used by HeapSort
+void heapify(int arr[], int n, int i, int offset)
+{
+    int largest = i;
+    int left  = 2 * i + 1;
+    int right = 2 * i + 2;
+
+    if (left < n && arr[offset + left] > arr[offset + largest])
+        largest = left;
+
+    if (right < n && arr[offset + right] > arr[offset + largest])
+        largest = right;
+
+    if (largest != i)
+    {
+        swapValue(&arr[offset + i], &arr[offset + largest]);
+        heapify(arr, n, largest, offset);
+    }
+}
+
+// HeapSort used when recursion depth is exceeded
+void heapSort(int arr[], int left, int right)
+{
+    int n = right - left + 1;
+
+    for (int i = n / 2 - 1; i >= 0; i--)
+        heapify(arr, n, i, left);
+
+    for (int i = n - 1; i > 0; i--)
+    {
+        swapValue(&arr[left], &arr[left + i]);
+        heapify(arr, i, 0, left);
+    }
+}
+
+// Median-of-three pivot selection
+int medianOfThree(int arr[], int a, int b, int c)
+{
+    if ((arr[a] < arr[b] && arr[b] < arr[c]) ||
+        (arr[c] < arr[b] && arr[b] < arr[a]))
+        return b;
+
+    if ((arr[b] < arr[a] && arr[a] < arr[c]) ||
+        (arr[c] < arr[a] && arr[a] < arr[b]))
+        return a;
+
+    return c;
+}
+
+// Partition function (QuickSort style)
+int partition(int arr[], int low, int high)
+{
+    int pivot = arr[high];
+    int i = low - 1;
+
+    for (int j = low; j < high; j++)
+    {
+        if (arr[j] <= pivot)
+        {
+            i++;
+            swapValue(&arr[i], &arr[j]);
+        }
+    }
+
+    swapValue(&arr[i + 1], &arr[high]);
+    return i + 1;
+}
+
+// Recursive Introsort utility
+void introsortUtil(int arr[], int left, int right, int depthLimit)
+{
+    int size = right - left + 1;
+
+    if (size < 16)
+    {
+        insertionSort(arr, left, right);
+        return;
+    }
+
+    if (depthLimit == 0)
+    {
+        heapSort(arr, left, right);
+        return;
+    }
+
+    int mid = left + size / 2;
+    int pivotIndex = medianOfThree(arr, left, mid, right);
+    swapValue(&arr[pivotIndex], &arr[right]);
+
+    int p = partition(arr, left, right);
+
+    introsortUtil(arr, left, p - 1, depthLimit - 1);
+    introsortUtil(arr, p + 1, right, depthLimit - 1);
+}
+
+// Introsort entry function
+void introsort(vector<int> &arr)
+{
+    int n = sizeof(arr) / sizeof(arr[0]);
+    int depthLimit = 2 * (int)log2(n);
+    introsortUtil(arr, 0, n - 1, depthLimit);
+}
+
+
 
 //Ana
 const int RUN = 32;
