@@ -1,4 +1,6 @@
 #include "aia_sort.h"
+#include <future>
+#include <thread>
 #include <bits/stdc++.h>
 using namespace std;
 
@@ -111,8 +113,20 @@ void heap_sort(vector<int> &nums) {
 
 //Andreea
 
+int median_of_three(vector<int> &nums, int l, int r) {
+    int m = (l + r) / 2;
+
+    if ((nums[l] <= nums[m] && nums[m] <= nums[r]) || (nums[r] <= nums[m] && nums[m] <= nums[l]))
+        return m;
+    if ((nums[m] <= nums[l] && nums[l] <= nums[r]) || (nums[r] <= nums[l] && nums[l] <= nums[m]))
+        return l;
+    return r;
+}
+
 int partition(vector<int> &nums, int low, int high) {
-    int pivot = nums[high]; // choose last element as pivot
+    int pivot_index = median_of_three(nums, low, high);
+    swap(nums[pivot_index], nums[high]);
+    int pivot = nums[high];
     int i = low - 1;
 
     for (int j = low; j < high; j++) {
@@ -213,4 +227,79 @@ void radixSort(vector<int> &nums) {
 
     for (int &x : nums)
         x -= shift;
+}
+
+constexpr int SYNC_SIZE = 10000;   // Minimum partition size to spawn async
+
+// Median of three (pass by value — int is small)
+int middle_of_three(int a, int b, int c)
+{
+    if (a < b)
+    {
+        if (b < c) return b;
+        if (a < c) return c;
+        return a;
+    }
+    else
+    {
+        if (a < c) return a;
+        if (b < c) return c;
+        return b;
+    }
+}
+
+void qsort_async_util(vector<int>& v, int left, int right)
+{
+    if (left >= right)
+        return;
+
+    int i = left;
+    int j = right;
+
+    int mid = left + (right - left) / 2;
+    int pivot = middle_of_three(v[left], v[mid], v[right]);
+
+    while (i <= j)
+    {
+        while (v[i] < pivot) i++;
+        while (v[j] > pivot) j--;
+
+        if (i <= j)
+        {
+            swap(v[i], v[j]);
+            i++;
+            j--;
+        }
+    }
+
+    future<void> future_task;
+
+    // Spawn async only for large partitions
+    if (j - left > SYNC_SIZE)
+    {
+        future_task = async(launch::async,
+            [&v, left, j]() {
+                qsort_async_util(v, left, j);
+            });
+    }
+    else
+    {
+        if (left < j)
+            qsort_async_util(v, left, j);
+    }
+
+    // Process right side in current thread
+    if (i < right)
+        qsort_async_util(v, i, right);
+
+    if (future_task.valid())
+        future_task.wait();
+}
+
+void parallel_sort(vector<int>& nums)
+{
+    if (nums.empty())
+        return;
+
+    qsort_async_util(nums, 0, nums.size() - 1);
 }
