@@ -1,8 +1,6 @@
 #include "aia_io.h"
 
-#include <cstdio>
-#include <string>
-#include <vector>
+#include <bits/stdc++.h>
 
 using namespace std;
 
@@ -23,7 +21,7 @@ vector<int> read(string filename) {
     return a;
 }
 
-void print_to_file(string filename, vector<int> a) {
+void print_to_file(string filename, vector<int> &a) {
     if (filename.empty()) return;
 
     if (filename == "stdout") {
@@ -42,7 +40,7 @@ void print_to_file(string filename, vector<int> a) {
     fclose(f);
 }
 
-void run_sort_and_save(
+long long run_sort_and_save(
     const vector<int>& nums,
     const string& algorithm_name,
     const string& folder_path,
@@ -55,8 +53,14 @@ void run_sort_and_save(
         sort_func(temp);
     });
 
-    printf("Size: %ld | %s Sort Time: %lld ms\n", temp.size(), algorithm_name.c_str(), time_taken);
+    cout << "Size: " << temp.size() - 1 << " | " << algorithm_name << " Sort Time: " << time_taken << " us" << endl;
 
     string output_filename = folder_path + algorithm_name + "/" + file_prefix + ".txt";
     print_to_file(output_filename, temp);
+
+    return time_taken;
+}
+
+void standard_sort(vector<int> &nums) {
+    sort(nums.begin(), nums.end());
 }
