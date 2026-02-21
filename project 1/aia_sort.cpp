@@ -353,37 +353,49 @@ void bubble_sort(vector<int> &nums) {
 
 //Milena
 void radixSort(vector<int> &nums) {
+    //If the vector is empty, nothing to sort
     if (nums.empty()) return;
 
+    //Find the maximum and minimum values in the vector
     int maxVal = *max_element(nums.begin(), nums.end());
     int minVal = *min_element(nums.begin(), nums.end());
 
+    //Compute shift so that all numbers become non-negative
     int shift = (minVal < 0) ? -minVal : 0;
 
+    //Apply the shift to all elements
     for (int &x : nums)
         x += shift;
 
+    //Update maxVal after shifting
     maxVal += shift;
 
+    //Temporary vector used for sorting by digits
     vector<int> temp(nums.size());
 
+    //Perform counting sort for each digit
     for (int exp = 1; maxVal / exp > 0; exp *= 10) {
         int count[10] = {0};
 
+        //Count occurrences of each digit at the current position
         for (int x : nums)
             count[(x / exp) % 10]++;
 
+        //Convert count[] into prefix sums
         for (int i = 1; i < 10; i++)
             count[i] += count[i - 1];
 
+        //Build the sorted array for the current digit
         for (int i = nums.size() - 1; i >= 0; i--) {
-            int d = (nums[i] / exp) % 10;
+            int d = (nums[i] / exp) % 10; //Current digit
             temp[--count[d]] = nums[i];
         }
 
+        //Copy the sorted values back into nums
         nums = temp;
     }
 
+    //Remove the shift to restore original values
     for (int &x : nums)
         x -= shift;
 }
