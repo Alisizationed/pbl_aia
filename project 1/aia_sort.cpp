@@ -295,20 +295,29 @@ void shell_sort(vector<int> &nums) {
     }
 }
 
-// Magda - Bubble sort
+// Magda
+// Bubble Sort - sorts the vector in ascending order
 void bubble_sort(vector<int> &nums) {
-    int n = nums.size();
-    bool swapped;
 
+    int n = nums.size();   // number of elements
+    bool swapped;          // checks if a swap happened
+
+    // Repeat passes through the array
     for (int i = 0; i < n - 1; i++) {
-        swapped = false;
 
+        swapped = false;   // reset for this pass
+
+        // Compare adjacent elements
         for (int j = 0; j < n - i - 1; j++) {
+
+            // Swap if they are in the wrong order
             if (nums[j] > nums[j + 1]) {
                 swap(nums[j], nums[j + 1]);
                 swapped = true;
             }
         }
+
+        // Stop early if no swaps were made
         if (!swapped)
             break;
     }
