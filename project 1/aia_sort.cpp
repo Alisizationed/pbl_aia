@@ -233,22 +233,37 @@ void heap_sort(vector<int> &nums) {
     }
 }
 
-//Andreea
 
-int median_of_three(vector<int> &nums, int l, int r) {
-    int m = (l + r) / 2;
+// Andreea - Quick Sort
+// avg O(n log n), worst case O(n^2)
 
-    if ((nums[l] <= nums[m] && nums[m] <= nums[r]) || (nums[r] <= nums[m] && nums[m] <= nums[l]))
-        return m;
-    if ((nums[m] <= nums[l] && nums[l] <= nums[r]) || (nums[r] <= nums[l] && nums[l] <= nums[m]))
-        return l;
-    return r;
+void insertionSortRange(vector<int> &nums, int low, int high) {
+    for (int i = low + 1; i <= high; i++) {
+        int key = nums[i];
+        int j = i - 1;
+        while (j >= low && nums[j] > key) {
+            nums[j + 1] = nums[j];
+            j--;
+        }
+        nums[j + 1] = key;
+    }
 }
 
+// picks the median of first, middle and last element as pivot
+int medianOfThree(vector<int> &nums, int low, int high) {
+    int mid = low + (high - low) / 2;
+    // sortins these 3 values so the middle one ends up as pivot
+    if (nums[low] > nums[mid]) swap(nums[low], nums[mid]);
+    if (nums[low] > nums[high]) swap(nums[low], nums[high]);
+    if (nums[mid] > nums[high]) swap(nums[mid], nums[high]);
+    // put pivot at the end so partition can work with it
+    swap(nums[mid], nums[high]);
+    return nums[high];
+}
+
+// standard Lomuto partition
 int partition(vector<int> &nums, int low, int high) {
-    int pivot_index = median_of_three(nums, low, high);
-    swap(nums[pivot_index], nums[high]);
-    int pivot = nums[high];
+    int pivot = medianOfThree(nums, low, high);
     int i = low - 1;
 
     for (int j = low; j < high; j++) {
@@ -258,20 +273,32 @@ int partition(vector<int> &nums, int low, int high) {
         }
     }
 
+    // puts pivot back where it belongs
     swap(nums[i + 1], nums[high]);
     return i + 1;
 }
 
+// recurses on the smaller one
+// and loops on the bigger one
 void quickSort(vector<int> &nums, int low, int high) {
-    if (low < high) {
+    while (high - low > 16) {
         int pi = partition(nums, low, high);
-        quickSort(nums, low, pi - 1);
-        quickSort(nums, pi + 1, high);
+        if (pi - low < high - pi) {
+            quickSort(nums, low, pi - 1);
+            low = pi + 1;
+        } else {
+            quickSort(nums, pi + 1, high);
+            high = pi - 1;
+        }
+    }
+    // small leftover chunks get sorted with insertion sort
+    if (low < high) {
+        insertionSortRange(nums, low, high);
     }
 }
 
-void sortArray(vector<int> &nums) {
-    if (!nums.empty()) {
+void sort_andreea(vector<int> &nums) {
+    if (nums.size() > 1) {
         quickSort(nums, 0, nums.size() - 1);
     }
 }
