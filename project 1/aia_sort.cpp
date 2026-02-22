@@ -136,54 +136,68 @@ void introsort(vector<int> &nums)
 }
 
 //Ana
+// Define the size of small arrays to be sorted with insertion sort
 const int RUN = 32;
 
-// Insertion Sort for small subarrays
+// Function for sorting small subarrays using insertion sort
 void insertionSort(vector<int> &arr, int left, int right) {
+    // Start from the second element of the subarray
     for (int i = left + 1; i <= right; i++) {
+        // Store the current element and get the index of the previous one
         int temp = arr[i];
         int j = i - 1;
+        // Move elements that are greater than temp one position ahead
         while (j >= left && arr[j] > temp) {
             arr[j + 1] = arr[j];
             j--;
         }
+        // Put temp in its right place
         arr[j + 1] = temp;
     }
 }
 
-// Merge two sorted runs
+// Function for merging two sorted subarrays
 void merge(vector<int> &arr, int l, int m, int r) {
+    // Get the lengths of the left and right subarrays
     int len1 = m - l + 1, len2 = r - m;
+    // Create temporary arrays for the two halves
     vector<int> left(len1), right(len2);
-
+    // Copy the data to the temporary arrays
     for (int i = 0; i < len1; i++) left[i] = arr[l + i];
     for (int i = 0; i < len2; i++) right[i] = arr[m + 1 + i];
-
+    // Initialize indices for left, right, and main merged arrays
     int i = 0, j = 0, k = l;
+    // Compare elements and put the smaller one into the main array
     while (i < len1 && j < len2) {
         if (left[i] <= right[j]) arr[k++] = left[i++];
         else arr[k++] = right[j++];
     }
+    // Copy the remaining elements of the left array if there are any left
     while (i < len1) arr[k++] = left[i++];
+    // Copy the remaining elements of the right array if there are any left
     while (j < len2) arr[k++] = right[j++];
 }
 
-// main Timsort logic
+// Function which implements the Timsort algorithm
 void timSort(vector<int> &nums) {
+    // Store the size of the vector
     int n = nums.size();
+    // If the array has 0 or 1 elements, it is already sorted
     if (n < 2) return;
 
-    // Sort small chunks of the array
+    // Sort small chunks of the array using insertion sort
     for (int i = 0; i < n; i += RUN) {
         insertionSort(nums, i, min((i + RUN - 1), (n - 1)));
     }
 
-    // Merge chunks iteratively
+    // Double the size of the merged subarrays in each iteration
     for (int size = RUN; size < n; size = 2 * size) {
+        // Get the starting index of the left subarray
         for (int left = 0; left < n; left += 2 * size) {
+            // Calculate the mid and right indices for merging
             int mid = left + size - 1;
             int right = min((left + 2 * size - 1), (n - 1));
-
+            // Merge the two subarrays if the right one exists
             if (mid < right) {
                 merge(nums, left, mid, right);
             }
