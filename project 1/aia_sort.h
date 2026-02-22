@@ -4,18 +4,22 @@
 
 using namespace std;
 
-void bucketSort(vector<int> &nums);
+void introsort(vector<int> &nums);
 
 void timSort(vector<int> &nums);
 
 void heap_sort(vector<int> &nums);
 
-void sort_andreea(vector<int> &nums);
+void sortArray(vector<int> &nums);
 
-void sort_diana(vector<int> &nums);
+void shell_sort(vector<int> &nums);
 
-void sort_magda(vector<int> &nums);
+void bubble_sort(vector<int> &nums);
 
-void sort_milena(vector<int> &nums);
+void radixSort(vector<int> &nums);
+
+void standard_sort(vector<int> &nums);
+
+void parallel_sort(vector<int> &nums);
 
 #endif //PROJECT_1_AIA_SORT_H
