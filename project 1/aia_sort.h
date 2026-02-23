@@ -10,7 +10,7 @@ void timSort(vector<int> &nums);
 
 void heap_sort(vector<int> &nums);
 
-void sortArray(vector<int> &nums);
+void sort_andreea(vector<int> &nums);
 
 void shell_sort(vector<int> &nums);
 

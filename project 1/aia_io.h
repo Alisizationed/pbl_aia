@@ -1,6 +1,6 @@
 #ifndef PROJECT_1_AIA_IO_H
 #define PROJECT_1_AIA_IO_H
-#include <bits/stdc++.h>
+#include "bits/stdc++.h"
 
 using namespace std;
 
@@ -13,7 +13,7 @@ long long measure(Func f) {
     return duration.count();
 }
 
-vector<int> read(string filename);
+vector<int> read_file(string filename);
 
 void print_to_file(string filename, vector<int> &a);
 

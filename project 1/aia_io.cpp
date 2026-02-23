@@ -1,10 +1,10 @@
 #include "aia_io.h"
 
-#include <bits/stdc++.h>
+#include "bits/stdc++.h"
 
 using namespace std;
 
-vector<int> read(string filename) {
+vector<int> read_file(string filename) {
     vector<int> a;
     FILE *f = fopen(filename.c_str(), "r");
     if (!f) {

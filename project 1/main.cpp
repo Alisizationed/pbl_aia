@@ -1,5 +1,5 @@
 #pragma GCC optimize("O3,unroll-loops")
-#include <bits/stdc++.h>
+#include "bits/stdc++.h"
 #include "aia_sort.h"
 #include "aia_io.h"
 
@@ -12,12 +12,12 @@ struct Algorithm {
 };
 
 void check_file(pair<long, string> filename, vector<tuple<long long, long, string>> &results) {
-    vector<int> nums = read(filename.second + "input_" + to_string(filename.first) + ".txt");
+    vector<int> nums = read_file(filename.second + "input_" + to_string(filename.first) + ".txt");
     vector<Algorithm> algorithms = {
         {"anastasia", heap_sort},
-        {"adelina", pigeonholeSort},
+        {"adelina", introsort},
         {"ana", timSort},
-        {"andreea", sortArray},
+        {"andreea", sort_andreea},
         {"milena", radixSort},
         {"madalina", bubble_sort},
         {"diana", shell_sort},

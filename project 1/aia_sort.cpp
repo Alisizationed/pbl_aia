@@ -1,7 +1,7 @@
 #include "aia_sort.h"
 #include <future>
 #include <thread>
-#include <bits/stdc++.h>
+#include "bits/stdc++.h"
 #include <math.h>
 using namespace std;
 
@@ -85,6 +85,8 @@ int *MedianOfThree(int * a, int * b, int * c)
 
     if (*c <= *b && *b <= *a)
         return (b);
+
+    return a; // Added fallback to prevent compiler warnings/errors
 }
 
 // A Utility function to perform intro sort
@@ -126,11 +128,14 @@ void IntrosortUtil(int arr[], int * begin,
 /* Implementation of introsort*/
 void introsort(vector<int> &nums)
 {
-    int n = sizeof(nums) / sizeof(nums[0]);
+    int n = nums.size();
+    if (n==0) return;
+
     int depthLimit = 2 * log(n);
 
     // Perform a recursive Introsort
-    IntrosortUtil(nums, 0, n, depthLimit);
+    // Fixed: Pass raw pointers using .data() to match IntrosortUtil's signature
+    IntrosortUtil(nums.data(), nums.data(), nums.data() + n - 1, depthLimit);
 
     return;
 }
