@@ -325,24 +325,35 @@ void sort_andreea(vector<int> &nums) {
 // TODO: Implement sorting algorithm
 //Diana
 void shell_sort(vector<int> &nums) {
+    // get the number of elements in the vector
     int n = nums.size();
 
+    // start with a large gap, then reduce the gap each iteration
+    // gap is initially half of the array size
     for(int gap = n / 2; gap > 0; gap /= 2) {
+        // perform insertion sort for elements with the current gap
+        // start from index = gap and go until the end of the vector
         for(int i = gap; i < n; i ++) {
+            // store the current element in a temporary variable
             int temp = nums[i];
+            // initialize j with current index
             int j = i;
 
+            // shift elements that are greater than temp
+            // move them forward by gap positions
             while (j >= gap && nums[j - gap] > temp) {
+                // move element to its new position
                 nums[j] = nums[j - gap];
+                // move to the previous gap position
                 j -= gap;
             }
+            // place temp in its correct sorted position
             nums[j] = temp;
         }
     }
 }
 
-// Magda
-// Bubble Sort - sorts the vector in ascending order
+// Magda - Bubble sort
 void bubble_sort(vector<int> &nums) {
 
     int n = nums.size();   // number of elements
