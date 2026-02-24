@@ -53,8 +53,6 @@ long long run_sort_and_save(
         sort_func(temp);
     });
 
-    cout << "Size: " << temp.size() - 1 << " | " << algorithm_name << " Sort Time: " << time_taken << " us" << endl;
-
     string output_filename = folder_path + algorithm_name + "/" + file_prefix + ".txt";
     print_to_file(output_filename, temp);
 
