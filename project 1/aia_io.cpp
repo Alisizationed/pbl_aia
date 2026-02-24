@@ -35,8 +35,17 @@ void print_to_file(string filename, vector<int> &a) {
         fprintf(stderr, "Error opening file %s\n", filename.c_str());
         return;
     }
-    for (int x: a) fprintf(f, "%d ", x);
-    fprintf(f, "\n");
+
+    string buffer;
+    buffer.reserve(a.size() * 12);
+
+    for (int x : a) {
+        buffer += to_string(x);
+        buffer += ' ';
+    }
+    buffer += '\n';
+
+    fwrite(buffer.c_str(), 1, buffer.size(), f);
     fclose(f);
 }
 
