@@ -76,7 +76,9 @@ void analyse() {
     vector<string> folders = {
         "tests_ascending/",
         "tests_descending/",
-        "tests_random/"
+        "tests_random/",
+        "tests_mixed/",
+        "tests_part_sorted/"
     };
     vector<vector<tuple<long long, long, string>>> results(input_filenames.size() * folders.size());
     string main_folder = "sorting_tests/";
