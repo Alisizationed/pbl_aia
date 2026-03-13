@@ -13,6 +13,7 @@ vector<int> read_file(string filename) {
     }
 
     int x;
+    fscanf(f, "%d", &x);
     while (fscanf(f, "%d", &x) == 1) {
         a.push_back(x);
     }
