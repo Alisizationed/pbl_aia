@@ -31,6 +31,13 @@ void check_file(const pair<long, string> &filename, vector<tuple<long long, long
     }
 
     // TODO: Print the results of algorithms
+    cout << "\nResults for size " << filename.first << "\n";
+
+    for (const auto& [time, size, algo] : results) {
+        if (size == filename.first) {
+            cout << algo << " -> " << time << " microseconds\n";
+        }
+    }
 }
 
 int main() {
