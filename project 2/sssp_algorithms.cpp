@@ -174,4 +174,5 @@ double dijkstra_fibonacci(vector<tuple<int, int, double>>& list, vector<int>& pa
     reverse(path.begin(), path.end());
 
     return dist[destination];
+    
 }
