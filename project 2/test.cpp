@@ -1,4 +1,4 @@
-#include "sssp_algorithms.h"
+#include <iostream>
 #include <vector>
 #include <tuple>
 #include <limits>
@@ -7,8 +7,13 @@
 #include <cmath>
 using namespace std;
 
-double dijkstra_fibonacci(vector<tuple<int, int, double>>& list, vector<int>& path) {
-
+// --- Copiază aici funcția ta completă dijkstra_fibonacci ---
+double dijkstra_fibonacci(
+    const vector<tuple<int,int,double>>& list,
+    int source,
+    int destination,
+    vector<int>& path
+) {
     // Find how many nodes are in the graph
     int n = 0;
     for (auto& [src, dst, w] : list) {
@@ -25,7 +30,7 @@ double dijkstra_fibonacci(vector<tuple<int, int, double>>& list, vector<int>& pa
     const double INF = numeric_limits<double>::infinity();
     vector<double> dist(n, INF);
     vector<int> prev(n, -1);
-    dist[0] = 0.0;
+    dist[source] = 0.0;
 
     //Fibonacci heap node
     struct Node {
@@ -161,7 +166,7 @@ double dijkstra_fibonacci(vector<tuple<int, int, double>>& list, vector<int>& pa
     }
 
     // Reconstruct path by walking backwards from destination to source
-    int destination = n - 1;
+    path.clear();
 
     if (dist[destination] == INF) {
         path.clear();
@@ -172,6 +177,36 @@ double dijkstra_fibonacci(vector<tuple<int, int, double>>& list, vector<int>& pa
         path.push_back(node);
     }
     reverse(path.begin(), path.end());
-
+    for(Node* nd : node_ptr)
+        if(nd) delete nd;
     return dist[destination];
+}
+
+// --- Program minimal pentru test ---
+int main() {
+    // Graful de test
+    vector<tuple<int,int,double>> edges = {
+        {0,1,2.0},
+        {0,2,4.0},
+        {1,2,1.0},
+        {1,3,7.0},
+        {2,3,3.0}
+    };
+
+    int source = 0;
+    int destination = 3;
+    vector<int> path;
+
+    double distance = dijkstra_fibonacci(edges, source, destination, path);
+
+    if(distance == numeric_limits<double>::infinity()) {
+        cout << "Nu există cale de la " << source << " la " << destination << endl;
+    } else {
+        cout << "Distanța minimă: " << distance << endl;
+        cout << "Drumul: ";
+        for(int v : path) cout << v << " ";
+        cout << endl;
+    }
+
+    return 0;
 }
