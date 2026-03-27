@@ -17,7 +17,8 @@ vector<vector<pair<int, double>>> read_file(string file_name, int n) {
     vector<vector<pair<int, double>>> adj(n);
 
     for (int i = 0; i < m; ++i) {
-        int u, v, w;
+        int u, v;
+        double w;
         ifs >> u >> v >> w;
         adj[u].emplace_back(make_pair(v, w));
     }
