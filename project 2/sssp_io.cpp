@@ -1,22 +1,27 @@
 #include "sssp_io.h"
+#include <fstream>
+#include <iostream>
 
 void print_to_file(string &file_name, vector<int>& path, double weight) {
-    ofstream fout(file_name);
+    ofstream out(file_name);
 
-    if (!fout.is_open()) return;
-
-    if (weight < 0) {
-        fout << "No path found\n";
+    if (!out.is_open()) {
+        cerr << "Error opening file: " << file_name << endl;
         return;
     }
 
-    fout << "Weight: " << weight << "\n";
-    fout << "Path: ";
+    out << "Shortest Path Weight: " << weight << "\n";
+    out << "Path: ";
 
-    for (int node : path) {
-        fout << node << " ";
+    if (path.empty()) {
+        out << "No path found.\n";
+    } else {
+        // print path with arrows, stopping before the last element to avoid a trailing arrow
+        for (size_t i = 0; i < path.size(); ++i) {
+            out << path[i] << (i == path.size() - 1 ? "" : " -> ");
+        }
+        out << "\n";
     }
 
-    fout << "\n";
-    fout.close();
+    out.close();
 }
