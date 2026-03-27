@@ -30,6 +30,10 @@ void check_file(const pair<long, string> &filename, vector<tuple<long long, long
             results.emplace_back(time_taken, filename.first, algorithm.name, density);
         }
     }
+    //
+    // for (auto res : results) {
+    //     cout << get<0>(res) << " "<< get<1>(res) << " "<< get<2>(res) << " " << get<3>(res) << endl;
+    // }
 }
 
 int main() {
