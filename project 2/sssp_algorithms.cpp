@@ -176,19 +176,16 @@ double dijkstra_fibonacci(vector<tuple<int, int, double>>& list, vector<int>& pa
     return dist[destination];
 
 
-double spfa(vector<tuple<int, int, double>>& list, vector<int>& path) {
-    // number of nodes
-    int n = 0;
-    for (auto &[u, v, w] : list) {
-        n = max(n, max(u, v));
-    }
-    n++;
+double dijkstra_fibonacci(vector<vector<pair<int, double>>> &adj, int source, int dest, vector<int>& path) {
+    return 0;
+}
 
-    // adjacency list
-    vector<vector<pair<int, double>>> adj(n);
-    for (auto &[u, v, w] : list) {
-        adj[u].push_back({v, w});
-    }
+double dijkstra_binary(vector<vector<pair<int, double>>> &adj, int source, int dest, vector<int>& path) {
+    return 0;
+}
+
+double spfa(vector<vector<pair<int, double>>> &adj, int source, int dest, vector<int>& path) {
+    int n = adj.size();
 
     vector<double> dist(n, DBL_MAX);
     vector<int> parent(n, -1);
@@ -196,7 +193,6 @@ double spfa(vector<tuple<int, int, double>>& list, vector<int>& path) {
 
     queue<int> q;
 
-    int source = 0;
     dist[source] = 0;
     q.push(source);
     in_queue[source] = true;
@@ -218,9 +214,6 @@ double spfa(vector<tuple<int, int, double>>& list, vector<int>& path) {
             }
         }
     }
-
-    // destination = last node
-    int dest = n - 1;
 
     // reconstruct path
     path.clear();
