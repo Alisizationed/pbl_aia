@@ -21,7 +21,7 @@ double dijkstra_fibonacci(vector<vector<pair<int, double>>> &adj, int source, in
 
 double dijkstra_binary(vector<vector<pair<int, double>>> &adj, int source, int dest, vector<int>& path);
 
-double spfa(vector<vector<pair<int, double>>> &adj, int source, int dest, vector<int>\& path);
+double spfa(vector<vector<pair<int, double>>> &adj, int source, int dest, vector<int>& path);
 ```
 
 Each function:
