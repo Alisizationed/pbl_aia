@@ -4,14 +4,15 @@
 #include "sssp_io.h"
 
 using namespace std;
-using SsspFunc = function<double(vector<tuple<int, int, double>>& list, vector<int>& path)>;
+using SsspFunc = function<double(vector<vector<pair<int, double>>> &adj, int source, int dest, vector<int>& path)>;
 
 struct Algorithm {
     string name;
     SsspFunc algorithm;
 };
 
-void check_file(const pair<long, string> &filename, vector<tuple<long long, long, string> > &results) {
+void check_file(const pair<long, string> &filename, vector<tuple<long long, long, string, string> > &results) {
+    int graph_size = filename.first;
     vector<string> densities = {"dense", "sparse"};
     vector<Algorithm> algorithms = {
         {"fib_dijkstra", dijkstra_fibonacci},
@@ -20,23 +21,24 @@ void check_file(const pair<long, string> &filename, vector<tuple<long long, long
     };
 
     for (const auto &density: densities) {
-        string input_file= filename.second + "test_v" + to_string(filename.first) + "_" + density + ".txt";
-        vector<tuple<int, int, double> > incidence_list = read_file(input_file);
-
+        string input_file= filename.second + "test_v" + to_string(graph_size) + "_" + density + ".txt";
+        vector<vector<pair<int, double>>> adj = read_file(input_file, graph_size);
 
         for (auto algorithm : algorithms) {
             string output_file = density + "_" + algorithm.name + "_output_" + to_string(filename.first) + "txt";
-            long long time_taken = run_sssp_and_save(incidence_list, output_file, algorithm.algorithm);
-            results.push_back(make_tuple(time_taken, filename.first, algorithm.name, density));
+            long long time_taken = run_sssp_and_save(adj, 0, graph_size - 1, output_file, algorithm.algorithm);
+            results.emplace_back(time_taken, filename.first, algorithm.name, density);
         }
-
     }
-
+    //
+    // for (auto res : results) {
+    //     cout << get<0>(res) << " "<< get<1>(res) << " "<< get<2>(res) << " " << get<3>(res) << endl;
+    // }
 }
 
 int main() {
-    vector<tuple<long long, long, string> > results;
-    vector<int> vertex_counts = {100, 1000, 5000, 10000, 50000};
+    vector<tuple<long long, long, string, string>> results;
+    vector vertex_counts = {100, 1000, 5000, 10000, 50000};
     for (int v : vertex_counts) {
         // pointing to the test_files directory where the inputs are
         check_file(make_pair(v, "./test_files/"), results);

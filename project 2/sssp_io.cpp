@@ -2,8 +2,34 @@
 #include <fstream>
 #include <iostream>
 
+vector<vector<pair<int, double>>> read_file(string file_name, int n) {
+    ifstream ifs(file_name);
+
+    if (!ifs.is_open()) {
+        cerr << "Cannot open file: " << file_name << endl;
+        exit(-1);
+    }
+
+    int m;
+    ifs >> m;
+    ifs >> m;
+
+    vector<vector<pair<int, double>>> adj(n);
+
+    for (int i = 0; i < m; ++i) {
+        int u, v;
+        double w;
+        ifs >> u >> v >> w;
+        adj[u].emplace_back(make_pair(v, w));
+    }
+
+    ifs.close();
+
+    return adj;
+}
+
 void print_to_file(string &file_name, vector<int>& path, double weight) {
-    ofstream out(file_name);
+    ofstream out("./results/" + file_name);
 
     if (!out.is_open()) {
         cerr << "Error opening file: " << file_name << endl;
