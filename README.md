@@ -11,17 +11,17 @@ This project implements and benchmarks several Single Source Shortest Path (SSSP
 ### Project Structure
 
 * `main.cpp` – Entry point used to run and measure algorithm performance
-* `sssp\\\_io.cpp` – Input/output utility functions
-* `sssp\\\_algorithms.cpp` – Implementations of SSSP algorithms
+* `sssp_io.cpp` – Input/output utility functions
+* `sssp_algorithms.cpp` – Implementations of SSSP algorithms
 
 ### Implemented Algorithms
 
 ```cpp
-double dijkstra\\\_fibonacci(vector<vector<pair<int, double>>> \\\&adj, int source, int dest, vector<int>\\\& path);
+double dijkstra_fibonacci(vector<vector<pair<int, double>>> &adj, int source, int dest, vector<int>& path);
 
-double dijkstra\\\_binary(vector<vector<pair<int, double>>> \\\&adj, int source, int dest, vector<int>\\\& path);
+double dijkstra_binary(vector<vector<pair<int, double>>> &adj, int source, int dest, vector<int>& path);
 
-double spfa(vector<vector<pair<int, double>>> \\\&adj, int source, int dest, vector<int>\\\& path);
+double spfa(vector<vector<pair<int, double>>> &adj, int source, int dest, vector<int>\& path);
 ```
 
 Each function:
@@ -36,13 +36,13 @@ Each function:
 Run the following commands:
 
 ```bash
-g++ -std=c++20 -c sssp\\\_io.cpp
-g++ -std=c++20 -c sssp\\\_algorithms.cpp
+g++ -std=c++20 -c sssp_io.cpp
+g++ -std=c++20 -c sssp_algorithms.cpp
 
-ar rcs libsssp\\\_io.a sssp\\\_io.o
-ar rcs libsssp\\\_algs.a sssp\\\_algorithms.o
+ar rcs libsssp_io.a sssp_io.o
+ar rcs libsssp_algs.a sssp_algorithms.o
 
-g++ -std=c++20 main.cpp -L. -lsssp\\\_io -lsssp\\\_algs -o program
+g++ -std=c++20 main.cpp -L. -lsssp_io -lsssp_algs -o program
 ```
 
 ### Run
