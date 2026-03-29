@@ -185,6 +185,43 @@ double dijkstra_fibonacci(vector<vector<pair<int, double> > > &adj, int source, 
 }
 
 double dijkstra_binary(vector<vector<pair<int, double> > > &adj, int source, int dest, vector<int> &path) {
+    int n=adj.size();
+
+    const double INF = numeric_limits<double>::infinity();
+    vector<double> dist(n, INF);
+    vector<int> prev(n, -1);
+    dist[source] = 0.0;
+
+    // Min heap
+    //greater<> makes it a min heap instead of the default max heap
+    priority_queue<pair<double, int>, vector<pair<double, int> >, greater<pair<double, int> > > pq;
+    pq.push({0.0, source});
+
+    while (!pq.empty()) {
+        auto [d, u]= pq.top();
+        pq.pop();
+
+        if (d>dist[u]) continue;
+
+        for (auto &[v, w]: adj[u]) {
+            double new_dist = dist[u] + w;
+            if (new_dist < dist[v]) {
+                dist[v] = new_dist;
+                prev[v] = u;
+                pq.push({new_dist, v});
+            }
+        }
+    }
+
+    // Reconstruct path
+    path.clear();
+    if (dist[dest]==INF) return INF;
+
+    for (int i=dest; i!=-1; i=prev[i]) {
+        path.push_back(i);
+    }
+    reverse(path.begin(), path.end());
+    return dist[dest];
     return 0;
 }
 
