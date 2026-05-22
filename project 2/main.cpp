@@ -38,7 +38,7 @@ void check_file(const pair<long, string> &filename, vector<tuple<long long, long
 
 int main() {
     vector<tuple<long long, long, string, string>> results;
-    vector vertex_counts = {100, 1000, 5000, 10000, 50000};
+    vector vertex_counts = {100, 1000, 5000, 10000, 50000, 100000};
     for (int v : vertex_counts) {
         // pointing to the test_files directory where the inputs are
         check_file(make_pair(v, "./test_files/"), results);
