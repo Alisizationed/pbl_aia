@@ -37,6 +37,7 @@ async def optimize(
             request.start,
             request.end,
             distributed,
+            request.departure_time,
             db
         )
     )

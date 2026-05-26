@@ -1,5 +1,6 @@
 from pydantic import BaseModel
 from typing import List
+from datetime import datetime
 
 
 class Node(BaseModel):
@@ -18,6 +19,11 @@ class Train(BaseModel):
     used_weight: float
 
 
+class TimeWindow(BaseModel):
+    valid_from: datetime
+    valid_until: datetime
+
+
 class Route(BaseModel):
     path: List[Node]
     cost: float
@@ -30,3 +36,4 @@ class PathRequest(BaseModel):
     end: Node
     trains: List[Train]
     carriages: List[Carriage]
+    departure_time: datetime

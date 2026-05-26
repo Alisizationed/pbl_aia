@@ -1,4 +1,5 @@
-from sqlalchemy import Column, Integer, String, Float, ForeignKey
+from sqlalchemy import Column, Integer, String, Float, ForeignKey, DateTime
+from sqlalchemy.orm import relationship
 from database.database import Base
 
 
@@ -20,3 +21,14 @@ class NetworkEdge(Base):
     cost = Column(Float, nullable=False)
     distance = Column(Float, nullable=False)
     capacity = Column(Integer, nullable=False)
+
+    time_windows = relationship("EdgeTimeWindow", backref="edge")
+
+
+class EdgeTimeWindow(Base):
+    __tablename__ = "edge_time_windows"
+
+    id = Column(Integer, primary_key=True, index=True)
+    edge_id = Column(Integer, ForeignKey("edges.id"))
+    valid_from = Column(DateTime, nullable=False)
+    valid_until = Column(DateTime, nullable=False)
