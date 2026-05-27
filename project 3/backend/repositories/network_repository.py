@@ -1,7 +1,7 @@
 from datetime import datetime
 from sqlalchemy.orm import Session
 
-from models.db_models import NetworkNode, NetworkEdge, EdgeTimeWindow, Carriage
+from models.db_models import NetworkNode, NetworkEdge, EdgeTimeWindow, Carriage, Train
 
 
 class NetworkRepository:
@@ -31,5 +31,13 @@ class NetworkRepository:
         return (
             db.query(Carriage)
             .filter(Carriage.id.in_(carriage_ids))
+            .all()
+        )
+
+    @staticmethod
+    def get_trains_by_ids(db: Session, train_ids: list[int]):
+        return (
+            db.query(Train)
+            .filter(Train.id.in_(train_ids))
             .all()
         )

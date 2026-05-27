@@ -34,6 +34,6 @@ class Route(BaseModel):
 class PathRequest(BaseModel):
     start: Node
     end: Node
-    trains: List[Train]
+    train_ids: List[int]
     carriage_ids: List[int]
     departure_time: datetime

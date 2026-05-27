@@ -39,3 +39,11 @@ class Carriage(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     weight = Column(Float, nullable=False)
+
+
+class Train(Base):
+    __tablename__ = "trains"
+
+    id = Column(Integer, primary_key=True, index=True)
+    capacity = Column(Float, nullable=False)
+    used_weight = Column(Float, nullable=False)
