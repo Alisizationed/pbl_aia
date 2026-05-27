@@ -2,10 +2,11 @@ from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 
 from database.database import SessionLocal
-from models.models import PathRequest
+from models.models import PathRequest, Carriage
 
 from services.carriage_service import CarriageService
 from services.optimal_route_service import OptimalRouteService
+from repositories.network_repository import NetworkRepository
 
 router = APIRouter()
 
@@ -24,11 +25,13 @@ async def optimize(
     request: PathRequest,
     db: Session = Depends(get_db)
 ):
+    db_carriages = NetworkRepository.get_carriages_by_ids(db, request.carriage_ids)
+    carriages = [Carriage(id=c.id, weight=c.weight) for c in db_carriages]
 
     distributed = (
         CarriageService.distribute_carriages(
             request.trains,
-            request.carriages
+            carriages
         )
     )
 

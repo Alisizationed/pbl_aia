@@ -35,5 +35,5 @@ class PathRequest(BaseModel):
     start: Node
     end: Node
     trains: List[Train]
-    carriages: List[Carriage]
+    carriage_ids: List[int]
     departure_time: datetime

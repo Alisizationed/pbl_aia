@@ -1,7 +1,7 @@
 from datetime import datetime
 from sqlalchemy.orm import Session
 
-from models.db_models import NetworkNode, NetworkEdge, EdgeTimeWindow
+from models.db_models import NetworkNode, NetworkEdge, EdgeTimeWindow, Carriage
 
 
 class NetworkRepository:
@@ -23,5 +23,13 @@ class NetworkRepository:
                 EdgeTimeWindow.valid_from <= timestamp,
                 EdgeTimeWindow.valid_until >= timestamp
             )
+            .all()
+        )
+
+    @staticmethod
+    def get_carriages_by_ids(db: Session, carriage_ids: list[int]):
+        return (
+            db.query(Carriage)
+            .filter(Carriage.id.in_(carriage_ids))
             .all()
         )

@@ -32,3 +32,10 @@ class EdgeTimeWindow(Base):
     edge_id = Column(Integer, ForeignKey("edges.id"))
     valid_from = Column(DateTime, nullable=False)
     valid_until = Column(DateTime, nullable=False)
+
+
+class Carriage(Base):
+    __tablename__ = "carriages"
+
+    id = Column(Integer, primary_key=True, index=True)
+    weight = Column(Float, nullable=False)
