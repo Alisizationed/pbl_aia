@@ -6,8 +6,6 @@ class CarriageService:
 
     @staticmethod
     def distribute_carriages(trains: list[Train], carriages: list[Carriage]):
-        distributed = defaultdict(list)
-
-
+        distributed: dict[int, tuple[Train, list[Carriage]]] = None
 
         return distributed
