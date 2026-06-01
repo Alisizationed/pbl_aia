@@ -8,6 +8,16 @@ class Node(BaseModel):
     name: str
 
 
+class Edge(BaseModel):
+    id: int
+    from_node_id: int
+    to_node_id: int
+    cost: float
+    distance: float
+    capacity: int
+    time: float
+
+
 class Carriage(BaseModel):
     id: int
     weight: float
@@ -25,7 +35,7 @@ class TimeWindow(BaseModel):
 
 
 class Route(BaseModel):
-    path: List[Node]
+    path: List[Edge]
     cost: float
     time: int
     distance: float

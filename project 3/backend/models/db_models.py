@@ -21,6 +21,7 @@ class NetworkEdge(Base):
     cost = Column(Float, nullable=False)
     distance = Column(Float, nullable=False)
     capacity = Column(Integer, nullable=False)
+    time = Column(Float, nullable=False)
 
     time_windows = relationship("EdgeTimeWindow", backref="edge")
 
