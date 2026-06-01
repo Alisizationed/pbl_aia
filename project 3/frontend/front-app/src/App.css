@@ -14,6 +14,27 @@
   background: #ffffff;
 }
 
+.view-tabs {
+  display: flex;
+  gap: 8px;
+  padding: 14px 36px 0;
+  background: #ffffff;
+}
+
+.view-tabs button {
+  min-height: 36px;
+  border: 1px solid #cfd8e6;
+  border-radius: 6px 6px 0 0;
+  color: #60708a;
+  background: #f7f8fb;
+}
+
+.view-tabs button.active {
+  color: #ffffff;
+  background: #2563eb;
+  border-color: #2563eb;
+}
+
 .eyebrow {
   margin: 0 0 4px;
   color: #60708a;
@@ -156,6 +177,83 @@ dt {
 dd {
   margin: 0;
   color: #172033;
+  font-weight: 700;
+}
+
+.fleet-shell {
+  padding: 24px 36px 36px;
+}
+
+.fleet-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 24px;
+}
+
+.fleet-card {
+  border: 1px solid #dde3ec;
+  border-radius: 8px;
+  padding: 20px 24px;
+  background: #ffffff;
+  text-align: left;
+}
+
+.fleet-card h2 {
+  margin: 0 0 16px;
+  font-size: 20px;
+}
+
+.fleet-empty {
+  margin: 0;
+  color: #60708a;
+  font-size: 15px;
+}
+
+.fleet-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 15px;
+}
+
+.fleet-table th {
+  padding: 8px 12px 8px 0;
+  color: #60708a;
+  font-size: 13px;
+  font-weight: 700;
+  text-align: left;
+  border-bottom: 1px solid #dde3ec;
+}
+
+.fleet-table td {
+  padding: 10px 12px 10px 0;
+  color: #172033;
+  border-bottom: 1px solid #edf1f6;
+}
+
+.util {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.util-bar {
+  flex: 1;
+  height: 8px;
+  border-radius: 999px;
+  background: #edf1f6;
+  overflow: hidden;
+}
+
+.util-bar span {
+  display: block;
+  height: 100%;
+  background: #2563eb;
+}
+
+.util-value {
+  min-width: 40px;
+  color: #60708a;
+  font-size: 13px;
   font-weight: 700;
 }
 

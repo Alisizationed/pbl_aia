@@ -10,6 +10,7 @@ import {
 } from '@xyflow/react'
 import '@xyflow/react/dist/style.css'
 import './App.css'
+import FleetView from './FleetView'
 
 const API_URL = import.meta.env.VITE_API_URL ?? 'http://localhost:8000'
 
@@ -74,6 +75,7 @@ function App() {
   const [status, setStatus] = useState('loading')
   const [error, setError] = useState('')
   const [selectedEdge, setSelectedEdge] = useState(null)
+  const [view, setView] = useState('graph')
 
   const refreshGraph = useCallback(() => {
     setStatus('loading')
@@ -136,6 +138,29 @@ function App() {
 
   return (
     <main className="network-page">
+      <nav className="view-tabs" aria-label="Views">
+        <button
+          type="button"
+          className={view === 'graph' ? 'active' : ''}
+          aria-pressed={view === 'graph'}
+          onClick={() => setView('graph')}
+        >
+          Network graph
+        </button>
+        <button
+          type="button"
+          className={view === 'fleet' ? 'active' : ''}
+          aria-pressed={view === 'fleet'}
+          onClick={() => setView('fleet')}
+        >
+          Fleet
+        </button>
+      </nav>
+
+      {view === 'fleet' ? <FleetView /> : null}
+
+      {view === 'graph' ? (
+        <>
       <header className="topbar">
         <div>
            <p className="eyebrow">Railway network</p>
@@ -217,6 +242,8 @@ function App() {
           )}
         </aside>
       </section>
+        </>
+      ) : null}
     </main>
   )
 }
