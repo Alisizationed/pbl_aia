@@ -5,6 +5,7 @@ function TrainPage() {
   const [trains, setTrains] = useState([]);
   const [capacity, setCapacity] = useState("");
   const [usedWeight, setUsedWeight] = useState("");
+  const [editingId, setEditingId] = useState(null);
   const [error, setError] = useState("");
 
   const loadTrains = async () => {
@@ -21,17 +22,37 @@ function TrainPage() {
     loadTrains();
   }, []);
 
-  const createTrain = async (e) => {
+  const saveTrain = async (e) => {
     e.preventDefault();
 
     try {
-      await API.post(`/trains/?capacity=${capacity}&used_weight=${usedWeight || 0}`);
+      if (editingId) {
+        await API.put(
+          `/trains/${editingId}?capacity=${capacity}&used_weight=${usedWeight || 0}`
+        );
+      } else {
+        await API.post(`/trains/?capacity=${capacity}&used_weight=${usedWeight || 0}`);
+      }
+
       setCapacity("");
       setUsedWeight("");
+      setEditingId(null);
       loadTrains();
     } catch {
-      setError("Could not create train.");
+      setError("Could not save train.");
     }
+  };
+
+  const startEdit = (train) => {
+    setEditingId(train.id);
+    setCapacity(train.capacity);
+    setUsedWeight(train.used_weight);
+  };
+
+  const cancelEdit = () => {
+    setEditingId(null);
+    setCapacity("");
+    setUsedWeight("");
   };
 
   const deleteTrain = async (id) => {
@@ -49,7 +70,7 @@ function TrainPage() {
 
       {error && <p className="error">{error}</p>}
 
-      <form onSubmit={createTrain} className="form">
+      <form onSubmit={saveTrain} className="form">
         <input
           type="number"
           placeholder="Capacity"
@@ -65,7 +86,13 @@ function TrainPage() {
           onChange={(e) => setUsedWeight(e.target.value)}
         />
 
-        <button type="submit">Add Train</button>
+        <button type="submit">{editingId ? "Update Train" : "Add Train"}</button>
+
+        {editingId && (
+          <button type="button" onClick={cancelEdit}>
+            Cancel
+          </button>
+        )}
       </form>
 
       <table>
@@ -74,7 +101,7 @@ function TrainPage() {
             <th>ID</th>
             <th>Capacity</th>
             <th>Used Weight</th>
-            <th>Action</th>
+            <th>Actions</th>
           </tr>
         </thead>
 
@@ -85,6 +112,7 @@ function TrainPage() {
               <td>{train.capacity}</td>
               <td>{train.used_weight}</td>
               <td>
+                <button onClick={() => startEdit(train)}>Edit</button>
                 <button onClick={() => deleteTrain(train.id)}>Delete</button>
               </td>
             </tr>

@@ -11,6 +11,7 @@ function EdgesPage() {
   const [capacity, setCapacity] = useState("");
   const [time, setTime] = useState("");
 
+  const [editingId, setEditingId] = useState(null);
   const [error, setError] = useState("");
 
   const loadEdges = async () => {
@@ -27,13 +28,19 @@ function EdgesPage() {
     loadEdges();
   }, []);
 
-  const createEdge = async (e) => {
+  const saveEdge = async (e) => {
     e.preventDefault();
 
     try {
-      await API.post(
-        `/edges/?from_node_id=${fromNodeId}&to_node_id=${toNodeId}&cost=${cost}&distance=${distance}&capacity=${capacity}&time=${time}`
-      );
+      if (editingId) {
+        await API.put(
+          `/edges/${editingId}?from_node_id=${fromNodeId}&to_node_id=${toNodeId}&cost=${cost}&distance=${distance}&capacity=${capacity}&time=${time}`
+        );
+      } else {
+        await API.post(
+          `/edges/?from_node_id=${fromNodeId}&to_node_id=${toNodeId}&cost=${cost}&distance=${distance}&capacity=${capacity}&time=${time}`
+        );
+      }
 
       setFromNodeId("");
       setToNodeId("");
@@ -41,11 +48,34 @@ function EdgesPage() {
       setDistance("");
       setCapacity("");
       setTime("");
+      setEditingId(null);
 
       loadEdges();
     } catch {
-      setError("Could not create edge.");
+      setError("Could not save edge.");
     }
+  };
+
+  const startEdit = (edge) => {
+    setEditingId(edge.id);
+
+    setFromNodeId(edge.from_node_id);
+    setToNodeId(edge.to_node_id);
+    setCost(edge.cost);
+    setDistance(edge.distance);
+    setCapacity(edge.capacity);
+    setTime(edge.time);
+  };
+
+  const cancelEdit = () => {
+    setEditingId(null);
+
+    setFromNodeId("");
+    setToNodeId("");
+    setCost("");
+    setDistance("");
+    setCapacity("");
+    setTime("");
   };
 
   const deleteEdge = async (id) => {
@@ -63,63 +93,71 @@ function EdgesPage() {
 
       {error && <p className="error">{error}</p>}
 
-      <form onSubmit={createEdge} className="form-container">
+      <form onSubmit={saveEdge} className="form-container">
 
-  <div className="form-row">
-    <input
-      type="number"
-      placeholder="From node ID"
-      value={fromNodeId}
-      onChange={(e) => setFromNodeId(e.target.value)}
-      required
-    />
+        <div className="form-row">
+          <input
+            type="number"
+            placeholder="From node ID"
+            value={fromNodeId}
+            onChange={(e) => setFromNodeId(e.target.value)}
+            required
+          />
 
-    <input
-      type="number"
-      placeholder="To node ID"
-      value={toNodeId}
-      onChange={(e) => setToNodeId(e.target.value)}
-      required
-    />
+          <input
+            type="number"
+            placeholder="To node ID"
+            value={toNodeId}
+            onChange={(e) => setToNodeId(e.target.value)}
+            required
+          />
 
-    <input
-      type="number"
-      placeholder="Cost"
-      value={cost}
-      onChange={(e) => setCost(e.target.value)}
-      required
-    />
-  </div>
+          <input
+            type="number"
+            placeholder="Cost"
+            value={cost}
+            onChange={(e) => setCost(e.target.value)}
+            required
+          />
+        </div>
 
-  <div className="form-row">
-    <input
-      type="number"
-      placeholder="Distance"
-      value={distance}
-      onChange={(e) => setDistance(e.target.value)}
-      required
-    />
+        <div className="form-row">
+          <input
+            type="number"
+            placeholder="Distance"
+            value={distance}
+            onChange={(e) => setDistance(e.target.value)}
+            required
+          />
 
-    <input
-      type="number"
-      placeholder="Capacity"
-      value={capacity}
-      onChange={(e) => setCapacity(e.target.value)}
-      required
-    />
+          <input
+            type="number"
+            placeholder="Capacity"
+            value={capacity}
+            onChange={(e) => setCapacity(e.target.value)}
+            required
+          />
 
-    <input
-      type="number"
-      placeholder="Time"
-      value={time}
-      onChange={(e) => setTime(e.target.value)}
-      required
-    />
+          <input
+            type="number"
+            placeholder="Time"
+            value={time}
+            onChange={(e) => setTime(e.target.value)}
+            required
+          />
 
-    <button type="submit">Add Edge</button>
-  </div>
+          <button type="submit">
+            {editingId ? "Update Edge" : "Add Edge"}
+          </button>
 
-</form>
+          {editingId && (
+            <button type="button" onClick={cancelEdit}>
+              Cancel
+            </button>
+          )}
+        </div>
+
+      </form>
 
       <table>
         <thead>
@@ -131,7 +169,7 @@ function EdgesPage() {
             <th>Distance</th>
             <th>Capacity</th>
             <th>Time</th>
-            <th>Action</th>
+            <th>Actions</th>
           </tr>
         </thead>
 
@@ -146,7 +184,13 @@ function EdgesPage() {
               <td>{edge.capacity}</td>
               <td>{edge.time}</td>
               <td>
-                <button onClick={() => deleteEdge(edge.id)}>Delete</button>
+                <button onClick={() => startEdit(edge)}>
+                  Edit
+                </button>
+
+                <button onClick={() => deleteEdge(edge.id)}>
+                  Delete
+                </button>
               </td>
             </tr>
           ))}

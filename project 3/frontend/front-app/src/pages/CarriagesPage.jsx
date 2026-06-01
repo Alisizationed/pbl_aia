@@ -4,6 +4,7 @@ import API from "../api/api";
 function CarriagesPage() {
   const [carriages, setCarriages] = useState([]);
   const [weight, setWeight] = useState("");
+  const [editingId, setEditingId] = useState(null);
   const [error, setError] = useState("");
 
   const loadCarriages = async () => {
@@ -20,16 +21,32 @@ function CarriagesPage() {
     loadCarriages();
   }, []);
 
-  const createCarriage = async (e) => {
+  const saveCarriage = async (e) => {
     e.preventDefault();
 
     try {
-      await API.post(`/carriages/?weight=${weight}`);
+      if (editingId) {
+        await API.put(`/carriages/${editingId}?weight=${weight}`);
+      } else {
+        await API.post(`/carriages/?weight=${weight}`);
+      }
+
       setWeight("");
+      setEditingId(null);
       loadCarriages();
     } catch {
-      setError("Could not create carriage.");
+      setError("Could not save carriage.");
     }
+  };
+
+  const startEdit = (carriage) => {
+    setEditingId(carriage.id);
+    setWeight(carriage.weight);
+  };
+
+  const cancelEdit = () => {
+    setEditingId(null);
+    setWeight("");
   };
 
   const deleteCarriage = async (id) => {
@@ -47,7 +64,7 @@ function CarriagesPage() {
 
       {error && <p className="error">{error}</p>}
 
-      <form onSubmit={createCarriage} className="form">
+      <form onSubmit={saveCarriage} className="form">
         <input
           type="number"
           placeholder="Weight"
@@ -56,7 +73,15 @@ function CarriagesPage() {
           required
         />
 
-        <button type="submit">Add Carriage</button>
+        <button type="submit">
+          {editingId ? "Update Carriage" : "Add Carriage"}
+        </button>
+
+        {editingId && (
+          <button type="button" onClick={cancelEdit}>
+            Cancel
+          </button>
+        )}
       </form>
 
       <table>
@@ -64,7 +89,7 @@ function CarriagesPage() {
           <tr>
             <th>ID</th>
             <th>Weight</th>
-            <th>Action</th>
+            <th>Actions</th>
           </tr>
         </thead>
 
@@ -74,6 +99,7 @@ function CarriagesPage() {
               <td>{carriage.id}</td>
               <td>{carriage.weight}</td>
               <td>
+                <button onClick={() => startEdit(carriage)}>Edit</button>
                 <button onClick={() => deleteCarriage(carriage.id)}>
                   Delete
                 </button>
