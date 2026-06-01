@@ -55,7 +55,8 @@ def create_edge(
         to_node_id=to_node_id,
         cost=cost,
         distance=distance,
-        capacity=capacity
+        capacity=capacity,
+        time=time
     )
 
     db.add(edge)
@@ -86,6 +87,7 @@ def update_edge(
     edge.cost = cost
     edge.distance = distance
     edge.capacity = capacity
+    edge.time = time
 
     db.commit()
     db.refresh(edge)
