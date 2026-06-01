@@ -1,11 +1,13 @@
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, declarative_base
 
-DATABASE_URL = (
-    "postgresql://postgres:password@localhost:5432/railway_db"
-)
+from config.settings import Settings
 
-engine = create_engine(DATABASE_URL)
+# DATABASE_URL = (
+#     "postgresql://postgres:password@localhost:5432/railway_db"
+# )
+
+engine = create_engine(Settings.DATABASE_URL)
 
 SessionLocal = sessionmaker(
     autocommit=False,

@@ -1,6 +1,7 @@
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 
+from auth.users import get_current_user
 from database.database import SessionLocal
 from models.models import PathRequest, Carriage, Train
 
@@ -22,8 +23,9 @@ def get_db():
 
 @router.post("/optimize")
 async def optimize(
-    request: PathRequest,
-    db: Session = Depends(get_db)
+        request: PathRequest,
+        db: Session = Depends(get_db),
+        _user=Depends(get_current_user)
 ):
     db_carriages = NetworkRepository.get_carriages_by_ids(db, request.carriage_ids)
     carriages = [Carriage(id=c.id, weight=c.weight) for c in db_carriages]
