@@ -1,3 +1,15 @@
+.navbar {
+  display: flex;
+  gap: 20px;
+  padding: 20px;
+  background-color: #222;
+}
+
+.navbar a {
+  color: white;
+  text-decoration: none;
+  font-weight: bold;
+}
 .counter {
   font-size: 16px;
   padding: 5px 10px;
