@@ -53,3 +53,11 @@ coverage/
 # Optional: generated documentation
 docs/html/
 docs/latex/
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.venv/
+venv/
+.env
