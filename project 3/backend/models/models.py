@@ -17,6 +17,9 @@ class Edge(BaseModel):
     capacity: int
     time: float
 
+class NetworkGraph(BaseModel):
+    nodes: List[Node]
+    edges: List[Edge]
 
 class Carriage(BaseModel):
     id: int
