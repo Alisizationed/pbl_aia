@@ -9,7 +9,7 @@ import {
   useNodesState,
 } from '@xyflow/react'
 import '@xyflow/react/dist/style.css'
-import './App.css'
+import '../App.css'
 
 const API_URL = import.meta.env.VITE_API_URL ?? 'http://localhost:8000'
 
@@ -68,7 +68,7 @@ function createFlowGraph(graph) {
   return { nodes, edges }
 }
 
-function App() {
+function GraphPage() {
   const [graph, setGraph] = useState({ nodes: [], edges: [] })
   const [nodes, setNodes, onNodesChange] = useNodesState([])
   const [edges, setEdges, onEdgesChange] = useEdgesState([])
@@ -244,4 +244,4 @@ function App() {
   )
 }
 
-export default App
+export default GraphPage
