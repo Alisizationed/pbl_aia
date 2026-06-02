@@ -43,6 +43,7 @@ function createFlowGraph(graph) {
     type: 'default',
     position: getNodePosition(index, graph.nodes.length),
     data: {
+      node,
       label: (
         <div className="node-label">
           <strong>{node.name}</strong>
@@ -73,6 +74,7 @@ function App() {
   const [edges, setEdges, onEdgesChange] = useEdgesState([])
   const [status, setStatus] = useState('loading')
   const [error, setError] = useState('')
+  const [selectedNode, setSelectedNode] = useState(null)
   const [selectedEdge, setSelectedEdge] = useState(null)
 
   const refreshGraph = useCallback(() => {
@@ -85,6 +87,7 @@ function App() {
         setGraph(nextGraph)
         setNodes(flowGraph.nodes)
         setEdges(flowGraph.edges)
+        setSelectedNode(null)
         setSelectedEdge(null)
         setStatus('ready')
       })
@@ -108,6 +111,7 @@ function App() {
         setGraph(nextGraph)
         setNodes(flowGraph.nodes)
         setEdges(flowGraph.edges)
+        setSelectedNode(null)
         setSelectedEdge(null)
         setStatus('ready')
       })
@@ -175,7 +179,14 @@ function App() {
             edges={edges}
             onNodesChange={onNodesChange}
             onEdgesChange={onEdgesChange}
-            onEdgeClick={(_, edge) => setSelectedEdge(edge.data)}
+            onNodeClick={(_, node) => {
+              setSelectedNode(node.data.node)
+              setSelectedEdge(null)
+            }}
+            onEdgeClick={(_, edge) => {
+              setSelectedEdge(edge.data)
+              setSelectedNode(null)
+            }}
             fitView
             fitViewOptions={{ padding: 0.2 }}
           >
@@ -186,8 +197,20 @@ function App() {
         ) : null}
 
         <aside className="details-panel">
-          <h2>Edge details</h2>
-          {selectedEdge ? (
+
+          <h2>{selectedNode ? 'Node details' : 'Edge details'}</h2>
+          {selectedNode ? (
+            <dl>
+              <div>
+                <dt>Name</dt>
+                <dd>{selectedNode.name}</dd>
+              </div>
+              <div>
+                <dt>ID</dt>
+                <dd>{selectedNode.id}</dd>
+              </div>
+            </dl>
+          ) : selectedEdge ? (
             <dl>
               <div>
                 <dt>Route</dt>
@@ -213,7 +236,7 @@ function App() {
               </div>
             </dl>
           ) : (
-            <p>Select an edge to inspect the values returned by the backend.</p>
+            <p>Select a node or edge to inspect the values returned by the backend.</p>
           )}
         </aside>
       </section>
