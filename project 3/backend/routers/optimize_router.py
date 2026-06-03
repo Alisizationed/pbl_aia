@@ -17,38 +17,30 @@ def get_db():
         db.close()
 
 @router.post("/optimize")
-async def optimize(
-    request: PathRequest,
-    db: Session = Depends(get_db)
-):
+async def optimize(request: PathRequest, db: Session = Depends(get_db)):
     db_carriages = NetworkRepository.get_carriages_by_ids(db, request.carriage_ids)
     carriages = [Carriage(id=c.id, weight=c.weight) for c in db_carriages]
 
     db_trains = NetworkRepository.get_trains_by_ids(db, request.train_ids)
     trains = [Train(id=t.id, capacity=t.capacity, used_weight=t.used_weight) for t in db_trains]
 
-    distributed = CarriageService.distribute_carriages(trains, carriages)
-
-    if not distributed:
-        raise HTTPException(status_code=400, detail="Could not distribute carriages across trains")
+    fixed_distribution = CarriageService.distribute_carriages(trains, carriages)
+    if not fixed_distribution:
+        raise HTTPException(status_code=400, detail="Could not distribute carriages")
 
     departure_time = request.departure_time.replace(tzinfo=None)
 
-    routes_per_train = OptimalRouteService.find_optimal_routes(
-        request.start,
-        request.end,
-        distributed,
-        departure_time,
-        db
+    ensembles = OptimalRouteService.generate_random_ensembles(
+        start=request.start,
+        end=request.end,
+        fixed_distribution=fixed_distribution,
+        departure_time=departure_time,
+        db=db,
+        num_ensembles=10,
+        routes_per_train=10
     )
 
-    if not routes_per_train:
-        raise HTTPException(status_code=404, detail="No valid routes found")
+    if not ensembles:
+        raise HTTPException(status_code=404, detail="No valid ensembles found")
 
-    with open("file.txt", "w") as f:
-        f.write(f"{routes_per_train}")
-
-    return {
-        train_id: [route.model_dump() for route in route_list]
-        for train_id, route_list in routes_per_train.items()
-    }
+    return {"ensembles": ensembles}

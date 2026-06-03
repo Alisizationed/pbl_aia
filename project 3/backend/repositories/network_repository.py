@@ -1,4 +1,6 @@
 from datetime import datetime
+from typing import List, Dict
+
 from sqlalchemy.orm import Session
 
 from models.db_models import NetworkNode, NetworkEdge, EdgeTimeWindow, Carriage, Train
@@ -36,6 +38,11 @@ class NetworkRepository:
             )
             for e in db_edges
         ]
+
+    @staticmethod
+    def get_edge_capacities_by_ids(db: Session, edge_ids: List[int]) -> Dict[int, int]:
+        edges = db.query(NetworkEdge).filter(NetworkEdge.id.in_(edge_ids)).all()
+        return {e.id: e.capacity for e in edges}
 
     @staticmethod
     def get_carriages_by_ids(db: Session, carriage_ids: list[int]):

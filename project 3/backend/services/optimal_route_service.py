@@ -5,7 +5,7 @@ from typing import List, Dict, Tuple
 from repositories.network_repository import NetworkRepository
 from models.models import Route, Edge
 from database.database import SessionLocal
-from models.db_models import EdgeTimeWindow 
+from models.db_models import EdgeTimeWindow
 
 
 class OptimalRouteService:
@@ -403,3 +403,109 @@ class OptimalRouteService:
             if routes:
                 results[train_id] = routes
         return results
+
+    @staticmethod
+    def get_all_routes(
+        start, end,
+        total_weight: float,
+        departure_time: datetime,
+        db,
+        all_edges: list,
+        time_windows: Dict[int, List[Tuple[datetime, datetime]]],
+        max_routes: int = 20
+    ) -> List[Route]:
+        routes = []
+        attempts = 0
+        max_attempts = max_routes * 10
+        while len(routes) < max_routes and attempts < max_attempts:
+            route = OptimalRouteService.generate_path(
+                start.id, end.id, departure_time,
+                Route(path=[], cost=0.0, time=0.0, distance=0.0),
+                {start.id}, total_weight, db, all_edges, time_windows
+            )
+            if route is not None and route not in routes:
+                routes.append(route)
+            attempts += 1
+        return routes
+
+    @staticmethod
+    def is_ensemble_valid(
+        ensemble: Dict[int, Route],
+        train_weights: Dict[int, float],
+        db
+    ) -> bool:
+        edge_load = {}
+        for train_id, route in ensemble.items():
+            weight = train_weights[train_id]
+            for edge in route.path:
+                edge_load[edge.id] = edge_load.get(edge.id, 0) + weight
+
+        if not edge_load:
+            return True
+
+        edge_ids = list(edge_load.keys())
+        capacities = NetworkRepository.get_edge_capacities_by_ids(db, edge_ids)
+
+        for edge_id, total_load in edge_load.items():
+            cap = capacities.get(edge_id, float('inf'))
+            if total_load > cap:
+                return False
+        return True
+
+    @staticmethod
+    def generate_random_ensembles(
+        start, end,
+        fixed_distribution: Dict[int, Tuple],
+        departure_time: datetime,
+        db,
+        num_ensembles: int = 3,
+        routes_per_train: int = 3
+    ) -> List[Dict]:
+        all_edges = NetworkRepository.get_edges_at(db, departure_time)
+
+        from database.database import SessionLocal
+        from models.db_models import EdgeTimeWindow
+        db_local = SessionLocal()
+        try:
+            windows = db_local.query(EdgeTimeWindow).all()
+            time_windows = {}
+            for w in windows:
+                time_windows.setdefault(w.edge_id, []).append((w.valid_from, w.valid_until))
+        finally:
+            db_local.close()
+
+        train_routes = {}
+        train_weights = {}
+        for train_id, (train, carriages) in fixed_distribution.items():
+            total_weight = train.used_weight + sum(c.weight for c in carriages)
+            train_weights[train_id] = total_weight
+            routes = OptimalRouteService.get_all_routes(
+                start, end, total_weight, departure_time, db,
+                all_edges, time_windows, max_routes=routes_per_train
+            )
+            if not routes:
+                return []
+            train_routes[train_id] = routes
+
+        ensembles = []
+        attempts = 0
+        max_attempts = num_ensembles * 20
+
+        while len(ensembles) < num_ensembles and attempts < max_attempts:
+            candidate = {}
+            for train_id, routes in train_routes.items():
+                candidate[train_id] = random.choice(routes)
+
+            if OptimalRouteService.is_ensemble_valid(candidate, train_weights, db):
+                ensemble_data = {}
+                for train_id, route in candidate.items():
+                    train, carriages = fixed_distribution[train_id]
+                    ensemble_data[train_id] = {
+                        "carriages": [{"id": c.id, "weight": c.weight} for c in carriages],
+                        "route": route.model_dump()
+                    }
+                if ensemble_data not in ensembles:
+                    ensembles.append(ensemble_data)
+            attempts += 1
+
+        return ensembles

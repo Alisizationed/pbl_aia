@@ -70,7 +70,9 @@ function buildFlowEdges(graphEdges, graphNodes) {
         }))
 }
 
-function RouteCard({route, rank, selected, onSelect, nodeMap}) {
+function TrainRouteCard({trainId, data, selected, onSelect, nodeMap}) {
+    const {carriages, route} = data
+    const carriagesStr = carriages.map(c => `#${c.id} (${c.weight})`).join(', ')
     const pathStr = route.path
         .map((e, i) => {
             const fromName = nodeMap[e.from_node_id] ?? e.from_node_id
@@ -80,11 +82,8 @@ function RouteCard({route, rank, selected, onSelect, nodeMap}) {
         .join(' ')
 
     return (
-        <div
-            className={`route-card${selected ? ' selected' : ''}`}
-            onClick={onSelect}
-        >
-            <div className="route-rank">{rank}</div>
+        <div className={`route-card ${selected ? 'selected' : ''}`} onClick={onSelect}>
+            <div className="train-badge">Train #{trainId}</div>
             <div>
                 <div className="route-metrics">
                     <div className="route-metric">
@@ -104,24 +103,58 @@ function RouteCard({route, rank, selected, onSelect, nodeMap}) {
                         <strong>{route.path.length}</strong>
                     </div>
                 </div>
+                <div className="carriages-info">🚆 Carriages: {carriagesStr || 'none'}</div>
                 {pathStr && <div className="route-path">{pathStr}</div>}
             </div>
-            <button
+            {/* <button
                 className={`btn-sm ${selected ? '' : 'btn-ghost'}`}
                 style={{flexShrink: 0}}
                 onClick={(e) => {
-                    e.stopPropagation();
+                    e.stopPropagation()
                     onSelect()
                 }}
             >
                 {selected ? '✓ Selected' : 'Select'}
+            </button> */}
+        </div>
+    )
+}
+
+function EnsembleCard({ensemble, ensembleIndex, selected, onSelect, nodeMap}) {
+    const trainIds = Object.keys(ensemble)
+    return (
+        <div className={`ensemble-card ${selected ? 'selected' : ''}`} onClick={onSelect}>
+            <div className="ensemble-header">
+                <strong>Ensemble #{ensembleIndex + 1}</strong>
+                <span className="badge">{trainIds.length} trains</span>
+            </div>
+            <div className="train-routes-list">
+                {trainIds.map(trainId => (
+                    <TrainRouteCard
+                        key={trainId}
+                        trainId={trainId}
+                        data={ensemble[trainId]}
+                        selected={false}
+                        onSelect={() => {}}
+                        nodeMap={nodeMap}
+                    />
+                ))}
+            </div>
+            <button
+                className="btn-sm btn-ghost"
+                style={{marginTop: 12, alignSelf: 'flex-end'}}
+                onClick={(e) => {
+                    e.stopPropagation()
+                    onSelect()
+                }}
+            >
+                {selected ? '✓ Selected' : 'Select this ensemble'}
             </button>
         </div>
     )
 }
 
 export default function OptimizePage() {
-
     const [graphData, setGraphData] = useState({nodes: [], edges: []})
     const [flowNodes, setFlowNodes, onNodesChange] = useNodesState([])
     const [flowEdges, setFlowEdges, onEdgesChange] = useEdgesState([])
@@ -129,7 +162,7 @@ export default function OptimizePage() {
 
     const [startNode, setStartNode] = useState(null)
     const [endNode, setEndNode] = useState(null)
-    const [pickMode, setPickMode] = useState('start') // 'start' | 'end' | null
+    const [pickMode, setPickMode] = useState('start')
 
     const [trains, setTrains] = useState([])
     const [carriages, setCarriages] = useState([])
@@ -137,25 +170,22 @@ export default function OptimizePage() {
     const [selCarriages, setSelCarriages] = useState([])
     const [departure, setDeparture] = useState('')
 
-    const [results, setResults] = useState(null) // { train_id: [route, ...] }
+    const [ensembles, setEnsembles] = useState([])       // массив ансамблей
+    const [selectedEnsembleIdx, setSelectedEnsembleIdx] = useState(null)
     const [loading, setLoading] = useState(false)
     const [error, setError] = useState('')
-    const [selRoutes, setSelRoutes] = useState({}) // { train_id: routeIndex }
 
     const nodeMap = useMemo(() => {
         const m = {}
-        graphData.nodes.forEach((n) => {
-            m[n.id] = n.name
-        })
+        graphData.nodes.forEach((n) => { m[n.id] = n.name })
         return m
     }, [graphData.nodes])
 
     useEffect(() => {
         let ignore = false
-
         fetch(`${API_URL}/network/graph`)
             .then((r) => {
-                if (!r.ok) throw new Error(r.status);
+                if (!r.ok) throw new Error(r.status)
                 return r.json()
             })
             .then((g) => {
@@ -169,14 +199,10 @@ export default function OptimizePage() {
                 if (!ignore) setGraphStatus('error')
             })
 
-        API.get('/trains/').then((r) => setTrains(r.data)).catch(() => {
-        })
-        API.get('/carriages/').then((r) => setCarriages(r.data)).catch(() => {
-        })
+        API.get('/trains/').then((r) => setTrains(r.data)).catch(() => {})
+        API.get('/carriages/').then((r) => setCarriages(r.data)).catch(() => {})
 
-        return () => {
-            ignore = true
-        }
+        return () => { ignore = true }
     }, [setFlowEdges, setFlowNodes])
 
     useEffect(() => {
@@ -200,8 +226,8 @@ export default function OptimizePage() {
         setStartNode(null)
         setEndNode(null)
         setPickMode('start')
-        setResults(null)
-        setSelRoutes({})
+        setEnsembles([])
+        setSelectedEnsembleIdx(null)
     }
 
     const toggleTrain = (id) =>
@@ -210,14 +236,14 @@ export default function OptimizePage() {
     const toggleCarriage = (id) =>
         setSelCarriages((prev) => prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id])
 
-    const canSubmit =
-        startNode && endNode && departure && selTrains.length > 0 && selCarriages.length > 0 && !loading
+    const canSubmit = startNode && endNode && departure && selTrains.length > 0 && selCarriages.length > 0 && !loading
 
     const handleSubmit = async () => {
         if (!canSubmit) return
         setLoading(true)
         setError('')
-        setResults(null)
+        setEnsembles([])
+        setSelectedEnsembleIdx(null)
 
         try {
             const body = {
@@ -228,8 +254,9 @@ export default function OptimizePage() {
                 departure_time: new Date(departure).toISOString(),
             }
             const res = await API.post('/optimize', body)
-            setResults(res.data)
-            setSelRoutes({})
+            const receivedEnsembles = res.data.ensembles || []
+            setEnsembles(receivedEnsembles)
+            if (receivedEnsembles.length > 0) setSelectedEnsembleIdx(0)
         } catch (err) {
             setError(err?.response?.data?.detail ?? 'Optimization failed. Check your inputs and backend.')
         } finally {
@@ -237,28 +264,41 @@ export default function OptimizePage() {
         }
     }
 
-    const resultEntries = results ? Object.entries(results) : []
+    useEffect(() => {
+        if (!graphData.edges.length || selectedEnsembleIdx === null || !ensembles[selectedEnsembleIdx]) {
+            if (flowEdges.length && graphData.edges.length) {
+                setFlowEdges(buildFlowEdges(graphData.edges, graphData.nodes))
+            }
+            return
+        }
+        const selectedEnsemble = ensembles[selectedEnsembleIdx]
+        const usedEdgeIds = new Set()
+        Object.values(selectedEnsemble).forEach(({route}) => {
+            route.path.forEach(edge => usedEdgeIds.add(edge.id))
+        })
+        const newEdges = buildFlowEdges(graphData.edges, graphData.nodes).map(e => ({
+            ...e,
+            style: usedEdgeIds.has(Number(e.id))
+                ? {stroke: '#f59e0b', strokeWidth: 4}
+                : {stroke: '#94a3b8', strokeWidth: 1.5},
+            animated: usedEdgeIds.has(Number(e.id))
+        }))
+        setFlowEdges(newEdges)
+    }, [selectedEnsembleIdx, ensembles, graphData.edges, graphData.nodes, setFlowEdges])
 
     return (
         <main className="page-shell">
-            {/* topbar */}
             <header className="topbar">
                 <div>
                     <p className="eyebrow">Route planner</p>
                     <h1>Optimize routes</h1>
                 </div>
-                <button
-                    onClick={clearSelection}
-                    className="btn-ghost"
-                    style={{fontSize: 14, minHeight: 36}}
-                >
+                <button onClick={clearSelection} className="btn-ghost" style={{fontSize: 14, minHeight: 36}}>
                     Reset
                 </button>
             </header>
 
-            {/* main split */}
             <div className="optimize-layout">
-                {/* graph */}
                 <div className="optimize-graph-pane">
                     {graphStatus === 'error' ? (
                         <div className="empty-state" role="alert">
@@ -283,9 +323,7 @@ export default function OptimizePage() {
                     )}
                 </div>
 
-                {/* right panel */}
                 <aside className="optimize-panel">
-                    {/* node picker */}
                     <div className="opt-section">
                         <h3>Route endpoints</h3>
                         <p className="node-picker-hint">
@@ -301,8 +339,8 @@ export default function OptimizePage() {
                                 style={{cursor: 'pointer'}}
                                 title="Click to re-pick start"
                                 onClick={() => {
-                                    setStartNode(null);
-                                    setEndNode(null);
+                                    setStartNode(null)
+                                    setEndNode(null)
                                     setPickMode('start')
                                 }}
                             >
@@ -313,7 +351,7 @@ export default function OptimizePage() {
                                 style={{cursor: 'pointer'}}
                                 title="Click to re-pick end"
                                 onClick={() => {
-                                    setEndNode(null);
+                                    setEndNode(null)
                                     setPickMode('end')
                                 }}
                             >
@@ -322,7 +360,6 @@ export default function OptimizePage() {
                         </div>
                     </div>
 
-                    {/* datetime */}
                     <div className="opt-section">
                         <h3>Departure time</h3>
                         <label>
@@ -336,7 +373,6 @@ export default function OptimizePage() {
                         </label>
                     </div>
 
-                    {/* trains */}
                     <div className="opt-section">
                         <h3>Trains</h3>
                         {trains.length === 0 ? (
@@ -357,7 +393,6 @@ export default function OptimizePage() {
                         )}
                     </div>
 
-                    {/* carriages */}
                     <div className="opt-section">
                         <h3>Carriages</h3>
                         {carriages.length === 0 ? (
@@ -384,62 +419,35 @@ export default function OptimizePage() {
                         </div>
                     )}
 
-                    <button
-                        className="opt-run-btn"
-                        onClick={handleSubmit}
-                        disabled={!canSubmit}
-                    >
+                    <button className="opt-run-btn" onClick={handleSubmit} disabled={!canSubmit}>
                         {loading ? 'Running optimizer…' : 'Find optimal routes'}
                     </button>
                 </aside>
             </div>
 
-            {/* results */}
-            {resultEntries.length > 0 && (
+            {/* Результаты: список ансамблей */}
+            {ensembles.length > 0 && (
                 <section className="results-pane">
-                    <h2>Optimal routes</h2>
-                    <div className="train-results">
-                        {resultEntries.map(([trainId, routes]) => (
-                            <div key={trainId} className="train-block">
-                                <div className="train-block-header">
-                                    <strong>Train #{trainId}</strong>
-                                    <span
-                                        className="badge badge-blue">{routes.length} route{routes.length !== 1 ? 's' : ''}</span>
-                                </div>
-                                {routes.length === 0 ? (
-                                    <div style={{padding: '16px 20px', color: 'var(--muted)', fontSize: 14}}>
-                                        No feasible routes found for this train.
-                                    </div>
-                                ) : (
-                                    <div className="route-cards">
-                                        {routes.map((route, i) => (
-                                            <RouteCard
-                                                key={i}
-                                                route={route}
-                                                rank={i + 1}
-                                                selected={selRoutes[trainId] === i}
-                                                onSelect={() =>
-                                                    setSelRoutes((prev) =>
-                                                        prev[trainId] === i
-                                                            ? {...prev, [trainId]: undefined}
-                                                            : {...prev, [trainId]: i}
-                                                    )
-                                                }
-                                                nodeMap={nodeMap}
-                                            />
-                                        ))}
-                                    </div>
-                                )}
-                            </div>
+                    <h2>Optimal ensembles</h2>
+                    <div className="ensembles-list">
+                        {ensembles.map((ensemble, idx) => (
+                            <EnsembleCard
+                                key={idx}
+                                ensemble={ensemble}
+                                ensembleIndex={idx}
+                                selected={selectedEnsembleIdx === idx}
+                                onSelect={() => setSelectedEnsembleIdx(idx)}
+                                nodeMap={nodeMap}
+                            />
                         ))}
                     </div>
                 </section>
             )}
 
-            {results && resultEntries.length === 0 && (
+            {ensembles.length === 0 && !loading && (
                 <section className="results-pane">
                     <div className="empty-state">
-                        <strong>No routes found</strong>
+                        <strong>No ensembles found</strong>
                         <span>Try different nodes, carriages, or departure time.</span>
                     </div>
                 </section>
