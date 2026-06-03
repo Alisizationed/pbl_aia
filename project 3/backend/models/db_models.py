@@ -15,8 +15,8 @@ class NetworkEdge(Base):
 
     id = Column(Integer, primary_key=True, index=True)
 
-    from_node_id = Column(Integer, ForeignKey("nodes.id"))
-    to_node_id = Column(Integer, ForeignKey("nodes.id"))
+    from_node_id = Column(Integer, ForeignKey("nodes.id", ondelete="CASCADE"))
+    to_node_id = Column(Integer, ForeignKey("nodes.id", ondelete="CASCADE"))
 
     cost = Column(Float, nullable=False)
     distance = Column(Float, nullable=False)

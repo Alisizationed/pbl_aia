@@ -2,6 +2,7 @@ from datetime import datetime
 from sqlalchemy.orm import Session
 
 from models.db_models import NetworkNode, NetworkEdge, EdgeTimeWindow, Carriage, Train
+from models.models import Edge
 
 
 class NetworkRepository:
@@ -15,16 +16,26 @@ class NetworkRepository:
         return db.query(NetworkEdge).all()
 
     @staticmethod
-    def get_edges_at(db: Session, timestamp: datetime):
-        return (
-            db.query(NetworkEdge)
-            .join(EdgeTimeWindow)
-            .filter(
-                EdgeTimeWindow.valid_from <= timestamp,
-                EdgeTimeWindow.valid_until >= timestamp
+    def get_node_by_id(db: Session, node_id: int):
+        return db.query(NetworkNode).filter(NetworkNode.id == node_id).first()
+
+    from models.models import Edge
+
+    @staticmethod
+    def get_edges_at(db: Session, departure_time: datetime) -> list[Edge]:
+        db_edges = db.query(NetworkEdge).all()  # или с фильтром по времени
+        return [
+            Edge(
+                id=e.id,
+                from_node_id=e.from_node_id,
+                to_node_id=e.to_node_id,
+                cost=e.cost,
+                distance=e.distance,
+                capacity=e.capacity,
+                time=e.time
             )
-            .all()
-        )
+            for e in db_edges
+        ]
 
     @staticmethod
     def get_carriages_by_ids(db: Session, carriage_ids: list[int]):
