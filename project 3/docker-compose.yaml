@@ -46,6 +46,21 @@ services:
     depends_on:
       - keycloak-db
 
+  backend:
+    build: ./backend
+    container_name: railway-backend
+    restart: unless-stopped
+    environment:
+      DATABASE_URL: postgresql://railway_user:railway_password@app-db:5432/railway_db
+      KEYCLOAK_URL: http://keycloak:8080
+      KEYCLOAK_REALM: railway
+      KEYCLOAK_CLIENT_ID: frontend
+    ports:
+      - "8000:8000"
+    depends_on:
+      - app-db
+      - keycloak
+
 volumes:
   railway_data:
   keycloak_data:
