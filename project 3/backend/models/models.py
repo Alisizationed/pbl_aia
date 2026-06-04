@@ -40,7 +40,7 @@ class TimeWindow(BaseModel):
 class Route(BaseModel):
     path: List[Edge]
     cost: float
-    time: int
+    time: float
     distance: float
 
 
