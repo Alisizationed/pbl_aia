@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import API from "../api/api";
+import {api} from "../api/api";
 
 function CarriagesPage() {
   const [carriages, setCarriages] = useState([]);
@@ -9,8 +9,8 @@ function CarriagesPage() {
 
   const loadCarriages = async () => {
     try {
-      const response = await API.get("/carriages/");
-      setCarriages(response.data);
+      const carriages = await api.get("/carriages/");
+      setCarriages(carriages);
       setError("");
     } catch {
       setError("Could not load carriages. Backend database may not be running.");
@@ -26,9 +26,9 @@ function CarriagesPage() {
 
     try {
       if (editingId) {
-        await API.put(`/carriages/${editingId}?weight=${weight}`);
+        await api.put(`/carriages/${editingId}?weight=${weight}`);
       } else {
-        await API.post(`/carriages/?weight=${weight}`);
+        await api.post(`/carriages/?weight=${weight}`);
       }
 
       setWeight("");
@@ -51,7 +51,7 @@ function CarriagesPage() {
 
   const deleteCarriage = async (id) => {
     try {
-      await API.delete(`/carriages/${id}`);
+      await api.delete(`/carriages/${id}`);
       loadCarriages();
     } catch {
       setError("Could not delete carriage.");

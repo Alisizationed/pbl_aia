@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import API from "../api/api";
+import {api} from "../api/api";
 
 function EdgesPage() {
   const [edges, setEdges] = useState([]);
@@ -16,8 +16,8 @@ function EdgesPage() {
 
   const loadEdges = async () => {
     try {
-      const response = await API.get("/edges/");
-      setEdges(response.data);
+      const edges = await api.get("/edges/");
+      setEdges(edges);
       setError("");
     } catch {
       setError("Could not load edges. Backend database may not be running.");
@@ -33,11 +33,11 @@ function EdgesPage() {
 
     try {
       if (editingId) {
-        await API.put(
+        await api.put(
           `/edges/${editingId}?from_node_id=${fromNodeId}&to_node_id=${toNodeId}&cost=${cost}&distance=${distance}&capacity=${capacity}&time=${time}`
         );
       } else {
-        await API.post(
+        await api.post(
           `/edges/?from_node_id=${fromNodeId}&to_node_id=${toNodeId}&cost=${cost}&distance=${distance}&capacity=${capacity}&time=${time}`
         );
       }
@@ -80,7 +80,7 @@ function EdgesPage() {
 
   const deleteEdge = async (id) => {
     try {
-      await API.delete(`/edges/${id}`);
+      await api.delete(`/edges/${id}`);
       loadEdges();
     } catch {
       setError("Could not delete edge.");

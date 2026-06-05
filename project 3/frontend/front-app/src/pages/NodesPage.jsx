@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import API from "../api/api";
+import {api} from "../api/api";
 
 function NodesPage() {
   const [nodes, setNodes] = useState([]);
@@ -9,8 +9,8 @@ function NodesPage() {
 
   const loadNodes = async () => {
     try {
-      const response = await API.get("/nodes/");
-      setNodes(response.data);
+      const nodes = await api.get("/nodes/");
+      setNodes(nodes);
       setError("");
     } catch {
       setError("Could not load nodes. Backend database may not be running.");
@@ -26,9 +26,9 @@ function NodesPage() {
 
     try {
       if (editingId) {
-        await API.put(`/nodes/${editingId}?name=${name}`);
+        await api.put(`/nodes/${editingId}?name=${name}`);
       } else {
-        await API.post(`/nodes/?name=${name}`);
+        await api.post(`/nodes/?name=${name}`);
       }
 
       setName("");
@@ -51,7 +51,7 @@ function NodesPage() {
 
   const deleteNode = async (id) => {
     try {
-      await API.delete(`/nodes/${id}`);
+      await api.delete(`/nodes/${id}`);
       loadNodes();
     } catch {
       setError("Could not delete node.");

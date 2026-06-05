@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from 'react'
+import {useCallback, useEffect, useMemo, useState} from 'react'
 import {
     Background,
     Controls,
@@ -11,16 +11,10 @@ import {
 import '@xyflow/react/dist/style.css'
 import '../App.css'
 
-const API_URL = import.meta.env.VITE_API_URL ?? 'http://localhost:8000'
+import { api } from '../api/api'
 
 async function loadNetworkGraph() {
-    const response = await fetch(`${API_URL}/network/graph`)
-
-    if (!response.ok) {
-        throw new Error(`Backend returned ${response.status}`)
-    }
-
-    return response.json()
+    return api.get('/network/graph')
 }
 
 function getNodePosition(index, total) {
@@ -61,15 +55,15 @@ function createFlowGraph(graph) {
             source: String(edge.from_node_id),
             target: String(edge.to_node_id),
             label: `cost ${formatMetric(edge.cost)}`,
-            markerEnd: { type: MarkerType.ArrowClosed },
+            markerEnd: {type: MarkerType.ArrowClosed},
             data: edge,
         }))
 
-    return { nodes, edges }
+    return {nodes, edges}
 }
 
-function GraphPage() {
-    const [graph, setGraph] = useState({ nodes: [], edges: [] })
+function Graph() {
+    const [graph, setGraph] = useState({nodes: [], edges: []})
     const [nodes, setNodes, onNodesChange] = useNodesState([])
     const [edges, setEdges, onEdgesChange] = useEdgesState([])
     const [status, setStatus] = useState('loading')
@@ -188,11 +182,11 @@ function GraphPage() {
                             setSelectedNode(null)
                         }}
                         fitView
-                        fitViewOptions={{ padding: 0.2 }}
+                        fitViewOptions={{padding: 0.2}}
                     >
-                        <Background gap={22} size={1} />
-                        <MiniMap pannable zoomable />
-                        <Controls />
+                        <Background gap={22} size={1}/>
+                        <MiniMap pannable zoomable/>
+                        <Controls/>
                     </ReactFlow>
                 ) : null}
 
@@ -244,4 +238,4 @@ function GraphPage() {
     )
 }
 
-export default GraphPage
+export default Graph

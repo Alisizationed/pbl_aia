@@ -1,21 +1,21 @@
-from pydantic import BaseModel
-import os
+from pydantic_settings import BaseSettings
 
-
-class Settings(BaseModel):
-    DATABASE_URL: str = os.getenv("DATABASE_URL")
-
-    KEYCLOAK_URL: str = os.getenv("KEYCLOAK_URL")
-    KEYCLOAK_REALM: str = os.getenv("KEYCLOAK_REALM")
-    KEYCLOAK_CLIENT_ID: str = os.getenv("KEYCLOAK_CLIENT_ID")
+class Settings(BaseSettings):
+    DATABASE_URL: str
+    KEYCLOAK_URL: str
+    KEYCLOAK_REALM: str
+    KEYCLOAK_CLIENT_ID: str
+    ISSUER: str = ""
 
     @property
     def JWKS_URL(self):
         return f"{self.KEYCLOAK_URL}/realms/{self.KEYCLOAK_REALM}/protocol/openid-connect/certs"
 
     @property
-    def ISSUER(self):
-        return f"{self.KEYCLOAK_URL}/realms/{self.KEYCLOAK_REALM}"
+    def effective_issuer(self):
+        return self.ISSUER or f"{self.KEYCLOAK_URL}/realms/{self.KEYCLOAK_REALM}"
 
+    class Config:
+        env_file = ".env"
 
 settings = Settings()

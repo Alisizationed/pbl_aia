@@ -55,6 +55,7 @@ services:
       KEYCLOAK_URL: http://keycloak:8080
       KEYCLOAK_REALM: railway
       KEYCLOAK_CLIENT_ID: frontend
+      ISSUER: http://localhost:8080/realms/railway
     ports:
       - "8000:8000"
     depends_on:

@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import API from "../api/api";
+import {api} from "../api/api";
 
 function TimeWindowsPage() {
   const [timeWindows, setTimeWindows] = useState([]);
@@ -27,8 +27,8 @@ function TimeWindowsPage() {
 
   const loadTimeWindows = async () => {
     try {
-      const response = await API.get("/time-windows/");
-      setTimeWindows(response.data);
+      const windows = await api.get("/time-windows/");
+      setTimeWindows(windows);
       setError("");
     } catch {
       setError(
@@ -46,11 +46,11 @@ function TimeWindowsPage() {
 
     try {
       if (editingId) {
-        await API.put(
+        await api.put(
           `/time-windows/${editingId}?edge_id=${edgeId}&valid_from=${validFrom}&valid_until=${validUntil}`
         );
       } else {
-        await API.post(
+        await api.post(
           `/time-windows/?edge_id=${edgeId}&valid_from=${validFrom}&valid_until=${validUntil}`
         );
       }
@@ -82,7 +82,7 @@ function TimeWindowsPage() {
 
   const deleteTimeWindow = async (id) => {
     try {
-      await API.delete(`/time-windows/${id}`);
+      await api.delete(`/time-windows/${id}`);
       loadTimeWindows();
     } catch {
       setError("Could not delete time window.");

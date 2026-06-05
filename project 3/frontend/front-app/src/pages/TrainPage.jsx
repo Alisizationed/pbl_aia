@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import API from "../api/api";
+import {api} from "../api/api";
 
 function TrainPage() {
   const [trains, setTrains] = useState([]);
@@ -10,8 +10,8 @@ function TrainPage() {
 
   const loadTrains = async () => {
     try {
-      const response = await API.get("/trains/");
-      setTrains(response.data);
+      const trains = await api.get("/trains/");
+      setTrains(trains);
       setError("");
     } catch {
       setError("Could not load trains. Backend database may not be running.");
@@ -27,11 +27,11 @@ function TrainPage() {
 
     try {
       if (editingId) {
-        await API.put(
+        await api.put(
           `/trains/${editingId}?capacity=${capacity}&used_weight=${usedWeight || 0}`
         );
       } else {
-        await API.post(`/trains/?capacity=${capacity}&used_weight=${usedWeight || 0}`);
+        await api.post(`/trains/?capacity=${capacity}&used_weight=${usedWeight || 0}`);
       }
 
       setCapacity("");
@@ -57,7 +57,7 @@ function TrainPage() {
 
   const deleteTrain = async (id) => {
     try {
-      await API.delete(`/trains/${id}`);
+      await api.delete(`/trains/${id}`);
       loadTrains();
     } catch {
       setError("Could not delete train.");

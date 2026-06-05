@@ -47,6 +47,7 @@ def create_edge(
         cost: float,
         distance: float,
         capacity: int,
+        time: float,
         db: Session = Depends(get_db),
         _user=Depends(require_role("admin"))
 ):
@@ -74,6 +75,7 @@ def update_edge(
         cost: float,
         distance: float,
         capacity: int,
+        time: float,
         db: Session = Depends(get_db),
         _user=Depends(require_role("admin"))
 ):
