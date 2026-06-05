@@ -53,3 +53,8 @@ coverage/
 # Optional: generated documentation
 docs/html/
 docs/latex/
+
+# Python cache files
+# Python
+__pycache__/
+*.pyc

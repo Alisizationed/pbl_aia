@@ -1,0 +1,126 @@
+import { useEffect, useState } from "react";
+import {api} from "../api/api";
+
+function EdgesPage() {
+  const [edges, setEdges] = useState([]);
+
+  const [fromNodeId, setFromNodeId] = useState("");
+  const [toNodeId, setToNodeId] = useState("");
+  const [cost, setCost] = useState("");
+  const [distance, setDistance] = useState("");
+  const [capacity, setCapacity] = useState("");
+  const [time, setTime] = useState("");
+
+  const [editingId, setEditingId] = useState(null);
+  const [error, setError] = useState("");
+
+  const loadEdges = async () => {
+    try {
+      const edges = await api.get("/edges/");
+      setEdges(edges);
+      setError("");
+    } catch {
+      setError("Could not load edges. Backend database may not be running.");
+    }
+  };
+
+  useEffect(() => {
+    loadEdges();
+  }, []);
+
+  const saveEdge = async (e) => {
+    e.preventDefault();
+
+    try {
+      if (editingId) {
+        await api.put(
+          `/edges/${editingId}?from_node_id=${fromNodeId}&to_node_id=${toNodeId}&cost=${cost}&distance=${distance}&capacity=${capacity}&time=${time}`
+        );
+      } else {
+        await api.post(
+          `/edges/?from_node_id=${fromNodeId}&to_node_id=${toNodeId}&cost=${cost}&distance=${distance}&capacity=${capacity}&time=${time}`
+        );
+      }
+
+      setFromNodeId("");
+      setToNodeId("");
+      setCost("");
+      setDistance("");
+      setCapacity("");
+      setTime("");
+      setEditingId(null);
+
+      loadEdges();
+    } catch {
+      setError("Could not save edge.");
+    }
+  };
+
+  const startEdit = (edge) => {
+    setEditingId(edge.id);
+
+    setFromNodeId(edge.from_node_id);
+    setToNodeId(edge.to_node_id);
+    setCost(edge.cost);
+    setDistance(edge.distance);
+    setCapacity(edge.capacity);
+    setTime(edge.time);
+  };
+
+  const cancelEdit = () => {
+    setEditingId(null);
+
+    setFromNodeId("");
+    setToNodeId("");
+    setCost("");
+    setDistance("");
+    setCapacity("");
+    setTime("");
+  };
+
+  const deleteEdge = async (id) => {
+    try {
+      await api.delete(`/edges/${id}`);
+      loadEdges();
+    } catch {
+      setError("Could not delete edge.");
+    }
+  };
+
+  return (
+    <div className="page">
+      <h1>Edges CRUD</h1>
+
+      {error && <p className="error">{error}</p>}
+
+      <form onSubmit={saveEdge} className="form-container">
+
+        <div className="form-row">
+          <input
+            type="number"
+            placeholder="From node ID"
+            value={fromNodeId}
+            onChange={(e) => setFromNodeId(e.target.value)}
+            required
+          />
+
+          <input
+            type="number"
+            placeholder="To node ID"
+            value={toNodeId}
+            onChange={(e) => setToNodeId(e.target.value)}
+            required
+          />
+
+          <input
+            type="number"
+            placeholder="Cost"
+            value={cost}
+            onChange={(e) => setCost(e.target.value)}
+            required
+          />
+        </div>
+    );
+}
+
+export default EdgesPage;
