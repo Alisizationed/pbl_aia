@@ -129,46 +129,7 @@ function TimeWindowsPage() {
             </button>
           )}
         </div>
-      </form>
-
-      <table>
-        <thead>
-          <tr>
-            <th>ID</th>
-            <th>Edge ID</th>
-            <th>Valid From</th>
-            <th>Valid Until</th>
-            <th>Actions</th>
-          </tr>
-        </thead>
-
-        <tbody>
-          {timeWindows.map((timeWindow) => (
-            <tr key={timeWindow.id}>
-              <td>{timeWindow.id}</td>
-              <td>{timeWindow.edge_id}</td>
-
-              <td>{formatDate(timeWindow.valid_from)}</td>
-
-              <td>{formatDate(timeWindow.valid_until)}</td>
-
-              <td>
-                <button onClick={() => startEdit(timeWindow)}>
-                  Edit
-                </button>
-
-                <button
-                  onClick={() => deleteTimeWindow(timeWindow.id)}
-                >
-                  Delete
-                </button>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-    </div>
-  );
+    );
 }
 
 export default TimeWindowsPage;
