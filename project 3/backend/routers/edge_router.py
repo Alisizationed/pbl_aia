@@ -4,6 +4,9 @@ from sqlalchemy.orm import Session
 from database.database import SessionLocal
 from models.db_models import NetworkEdge
 
+from auth.users import get_current_user
+from auth.roles import require_role
+
 router = APIRouter(prefix="/edges", tags=["Edges"])
 
 
@@ -16,12 +19,19 @@ def get_db():
 
 
 @router.get("/")
-def get_edges(db: Session = Depends(get_db)):
+def get_edges(
+        db: Session = Depends(get_db),
+        _user=Depends(get_current_user)
+):
     return db.query(NetworkEdge).all()
 
 
 @router.get("/{edge_id}")
-def get_edge(edge_id: int, db: Session = Depends(get_db)):
+def get_edge(
+        edge_id: int,
+        db: Session = Depends(get_db),
+        _user=Depends(get_current_user)
+):
     edge = db.query(NetworkEdge).filter(NetworkEdge.id == edge_id).first()
 
     if edge is None:
@@ -32,13 +42,14 @@ def get_edge(edge_id: int, db: Session = Depends(get_db)):
 
 @router.post("/")
 def create_edge(
-    from_node_id: int,
-    to_node_id: int,
-    cost: float,
-    distance: float,
-    capacity: int,
-    time: float,
-    db: Session = Depends(get_db)
+        from_node_id: int,
+        to_node_id: int,
+        cost: float,
+        distance: float,
+        capacity: int,
+        time: float,
+        db: Session = Depends(get_db),
+        _user=Depends(require_role("admin"))
 ):
     edge = NetworkEdge(
         from_node_id=from_node_id,
@@ -58,14 +69,15 @@ def create_edge(
 
 @router.put("/{edge_id}")
 def update_edge(
-    edge_id: int,
-    from_node_id: int,
-    to_node_id: int,
-    cost: float,
-    distance: float,
-    capacity: int,
-    time: float,
-    db: Session = Depends(get_db)
+        edge_id: int,
+        from_node_id: int,
+        to_node_id: int,
+        cost: float,
+        distance: float,
+        capacity: int,
+        time: float,
+        db: Session = Depends(get_db),
+        _user=Depends(require_role("admin"))
 ):
     edge = db.query(NetworkEdge).filter(NetworkEdge.id == edge_id).first()
 
@@ -86,7 +98,11 @@ def update_edge(
 
 
 @router.delete("/{edge_id}")
-def delete_edge(edge_id: int, db: Session = Depends(get_db)):
+def delete_edge(
+        edge_id: int,
+        db: Session = Depends(get_db),
+        _user=Depends(require_role("admin"))
+):
     edge = db.query(NetworkEdge).filter(NetworkEdge.id == edge_id).first()
 
     if edge is None:

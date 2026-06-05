@@ -1,91 +1,115 @@
-import {useEffect, useState} from "react";
-import API from "../api/api";
+import { useEffect, useState } from "react";
+import {api} from "../api/api";
 
-export default function CarriagesPage() {
-    const [carriages, setCarriages] = useState([]);
-    const [weight, setWeight] = useState("");
-    const [editingId, setEditingId] = useState(null);
-    const [error, setError] = useState("");
+function CarriagesPage() {
+  const [carriages, setCarriages] = useState([]);
+  const [weight, setWeight] = useState("");
+  const [editingId, setEditingId] = useState(null);
+  const [error, setError] = useState("");
 
-    const load = async () => {
-        try {
-            const r = await API.get("/carriages/");
-            setCarriages(r.data);
-            setError("");
-        } catch {
-            setError("Could not load carriages.");
-        }
-    };
-    useEffect(() => {
-        load();
-    }, []);
+  const loadCarriages = async () => {
+    try {
+      const carriages = await api.get("/carriages/");
+      setCarriages(carriages);
+      setError("");
+    } catch {
+      setError("Could not load carriages. Backend database may not be running.");
+    }
+  };
 
-    const save = async (e) => {
-        e.preventDefault();
-        try {
-            if (editingId) await API.put(`/carriages/${editingId}?weight=${weight}`);
-            else await API.post(`/carriages/?weight=${weight}`);
-            setWeight("");
-            setEditingId(null);
-            load();
-        } catch {
-            setError("Could not save carriage.");
-        }
-    };
+  useEffect(() => {
+    loadCarriages();
+  }, []);
 
-    const startEdit = (c) => {
-        setEditingId(c.id);
-        setWeight(c.weight);
-    };
-    const cancel = () => {
-        setEditingId(null);
-        setWeight("");
-    };
-    const del = async (id) => {
-        try {
-            await API.delete(`/carriages/${id}`);
-            load();
-        } catch {
-            setError("Could not delete.");
-        }
-    };
+  const saveCarriage = async (e) => {
+    e.preventDefault();
 
-    return (
-        <div className="crud-page">
-            <h1>Carriages</h1>
-            {error && <div className="alert alert-error">{error}</div>}
-            <form onSubmit={save} className="form-bar">
-                <label>
-                    Weight
-                    <input type="number" placeholder="e.g. 20" value={weight}
-                           onChange={(e) => setWeight(e.target.value)} required/>
-                </label>
-                <button type="submit">{editingId ? "Update" : "Add carriage"}</button>
-                {editingId && <button type="button" className="btn-ghost" onClick={cancel}>Cancel</button>}
-            </form>
-            <div className="table-wrap">
-                <table>
-                    <thead>
-                    <tr>
-                        <th>ID</th>
-                        <th>Weight</th>
-                        <th>Actions</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    {carriages.map((c) => (
-                        <tr key={c.id}>
-                            <td>{c.id}</td>
-                            <td>{c.weight}</td>
-                            <td style={{display: "flex", gap: 6}}>
-                                <button className="btn-sm btn-ghost" onClick={() => startEdit(c)}>Edit</button>
-                                <button className="btn-sm btn-danger" onClick={() => del(c.id)}>Delete</button>
-                            </td>
-                        </tr>
-                    ))}
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    );
+    try {
+      if (editingId) {
+        await api.put(`/carriages/${editingId}?weight=${weight}`);
+      } else {
+        await api.post(`/carriages/?weight=${weight}`);
+      }
+
+      setWeight("");
+      setEditingId(null);
+      loadCarriages();
+    } catch {
+      setError("Could not save carriage.");
+    }
+  };
+
+  const startEdit = (carriage) => {
+    setEditingId(carriage.id);
+    setWeight(carriage.weight);
+  };
+
+  const cancelEdit = () => {
+    setEditingId(null);
+    setWeight("");
+  };
+
+  const deleteCarriage = async (id) => {
+    try {
+      await api.delete(`/carriages/${id}`);
+      loadCarriages();
+    } catch {
+      setError("Could not delete carriage.");
+    }
+  };
+
+  return (
+    <div className="page">
+      <h1>Carriages CRUD</h1>
+
+      {error && <p className="error">{error}</p>}
+
+      <form onSubmit={saveCarriage} className="form">
+        <input
+          type="number"
+          placeholder="Weight"
+          value={weight}
+          onChange={(e) => setWeight(e.target.value)}
+          required
+        />
+
+        <button type="submit">
+          {editingId ? "Update Carriage" : "Add Carriage"}
+        </button>
+
+        {editingId && (
+          <button type="button" onClick={cancelEdit}>
+            Cancel
+          </button>
+        )}
+      </form>
+
+      <table>
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Weight</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          {carriages.map((carriage) => (
+            <tr key={carriage.id}>
+              <td>{carriage.id}</td>
+              <td>{carriage.weight}</td>
+              <td>
+                <button onClick={() => startEdit(carriage)}>Edit</button>
+                <button onClick={() => deleteCarriage(carriage.id)}>
+                  Delete
+                </button>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  );
 }
+
+export default CarriagesPage;

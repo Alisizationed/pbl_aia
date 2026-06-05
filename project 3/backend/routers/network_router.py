@@ -1,6 +1,7 @@
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 
+from auth.users import get_current_user
 from database.database import SessionLocal
 from models.models import Edge, NetworkGraph, Node
 from repositories.network_repository import NetworkRepository
@@ -17,7 +18,10 @@ def get_db():
 
 
 @router.get("/graph", response_model=NetworkGraph)
-def get_network_graph(db: Session = Depends(get_db)):
+def get_network_graph(
+        db: Session = Depends(get_db),
+        _user=Depends(get_current_user)
+    ):
     nodes = [
         Node(id=node.id, name=node.name)
         for node in NetworkRepository.get_all_nodes(db)

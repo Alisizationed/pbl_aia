@@ -1,4 +1,4 @@
-import keycloak from '../keycloak'
+import keycloak from './keycloak'
 
 const BASE = import.meta.env.VITE_API_URL
 

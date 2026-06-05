@@ -1,91 +1,111 @@
-import {useEffect, useState} from "react";
-import API from "../api/api";
+import { useEffect, useState } from "react";
+import {api} from "../api/api";
 
-export default function NodesPage() {
-    const [nodes, setNodes] = useState([]);
-    const [name, setName] = useState("");
-    const [editingId, setEditingId] = useState(null);
-    const [error, setError] = useState("");
+function NodesPage() {
+  const [nodes, setNodes] = useState([]);
+  const [name, setName] = useState("");
+  const [editingId, setEditingId] = useState(null);
+  const [error, setError] = useState("");
 
-    const load = async () => {
-        try {
-            const r = await API.get("/nodes/");
-            setNodes(r.data);
-            setError("");
-        } catch {
-            setError("Could not load nodes.");
-        }
-    };
-    useEffect(() => {
-        load();
-    }, []);
+  const loadNodes = async () => {
+    try {
+      const nodes = await api.get("/nodes/");
+      setNodes(nodes);
+      setError("");
+    } catch {
+      setError("Could not load nodes. Backend database may not be running.");
+    }
+  };
 
-    const save = async (e) => {
-        e.preventDefault();
-        try {
-            if (editingId) await API.put(`/nodes/${editingId}?name=${name}`);
-            else await API.post(`/nodes/?name=${name}`);
-            setName("");
-            setEditingId(null);
-            load();
-        } catch {
-            setError("Could not save node.");
-        }
-    };
+  useEffect(() => {
+    loadNodes();
+  }, []);
 
-    const startEdit = (n) => {
-        setEditingId(n.id);
-        setName(n.name);
-    };
-    const cancel = () => {
-        setEditingId(null);
-        setName("");
-    };
-    const del = async (id) => {
-        try {
-            await API.delete(`/nodes/${id}`);
-            load();
-        } catch {
-            setError("Could not delete.");
-        }
-    };
+  const saveNode = async (e) => {
+    e.preventDefault();
 
-    return (
-        <div className="crud-page">
-            <h1>Nodes</h1>
-            {error && <div className="alert alert-error">{error}</div>}
-            <form onSubmit={save} className="form-bar">
-                <label>
-                    Name
-                    <input type="text" placeholder="Station name" value={name} onChange={(e) => setName(e.target.value)}
-                           required/>
-                </label>
-                <button type="submit">{editingId ? "Update" : "Add node"}</button>
-                {editingId && <button type="button" className="btn-ghost" onClick={cancel}>Cancel</button>}
-            </form>
-            <div className="table-wrap">
-                <table>
-                    <thead>
-                    <tr>
-                        <th>ID</th>
-                        <th>Name</th>
-                        <th>Actions</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    {nodes.map((n) => (
-                        <tr key={n.id}>
-                            <td>{n.id}</td>
-                            <td>{n.name}</td>
-                            <td style={{display: "flex", gap: 6}}>
-                                <button className="btn-sm btn-ghost" onClick={() => startEdit(n)}>Edit</button>
-                                <button className="btn-sm btn-danger" onClick={() => del(n.id)}>Delete</button>
-                            </td>
-                        </tr>
-                    ))}
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    );
+    try {
+      if (editingId) {
+        await api.put(`/nodes/${editingId}?name=${name}`);
+      } else {
+        await api.post(`/nodes/?name=${name}`);
+      }
+
+      setName("");
+      setEditingId(null);
+      loadNodes();
+    } catch {
+      setError("Could not save node.");
+    }
+  };
+
+  const startEdit = (node) => {
+    setEditingId(node.id);
+    setName(node.name);
+  };
+
+  const cancelEdit = () => {
+    setEditingId(null);
+    setName("");
+  };
+
+  const deleteNode = async (id) => {
+    try {
+      await api.delete(`/nodes/${id}`);
+      loadNodes();
+    } catch {
+      setError("Could not delete node.");
+    }
+  };
+
+  return (
+    <div className="page">
+      <h1>Nodes CRUD</h1>
+
+      {error && <p className="error">{error}</p>}
+
+      <form onSubmit={saveNode} className="form">
+        <input
+          type="text"
+          placeholder="Node name"
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+          required
+        />
+
+        <button type="submit">{editingId ? "Update Node" : "Add Node"}</button>
+
+        {editingId && (
+          <button type="button" onClick={cancelEdit}>
+            Cancel
+          </button>
+        )}
+      </form>
+
+      <table>
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Name</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          {nodes.map((node) => (
+            <tr key={node.id}>
+              <td>{node.id}</td>
+              <td>{node.name}</td>
+              <td>
+                <button onClick={() => startEdit(node)}>Edit</button>
+                <button onClick={() => deleteNode(node.id)}>Delete</button>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  );
 }
+
+export default NodesPage;

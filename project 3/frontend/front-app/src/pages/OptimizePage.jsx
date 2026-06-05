@@ -9,9 +9,9 @@ import {
     useNodesState,
 } from '@xyflow/react'
 import '@xyflow/react/dist/style.css'
-import API from '../api/api'
+import {api} from '../api/api'
 
-const API_URL = import.meta.env.VITE_API_URL ?? 'http://localhost:8000'
+const api_URL = import.meta.env.VITE_api_URL ?? 'http://localhost:8000'
 
 function getNodePosition(index, total) {
     const radius = Math.max(180, Math.min(360, total * 42))
@@ -183,11 +183,8 @@ export default function OptimizePage() {
 
     useEffect(() => {
         let ignore = false
-        fetch(`${API_URL}/network/graph`)
-            .then((r) => {
-                if (!r.ok) throw new Error(r.status)
-                return r.json()
-            })
+
+        api.get('/network/graph')
             .then((g) => {
                 if (ignore) return
                 setGraphData(g)
@@ -199,8 +196,8 @@ export default function OptimizePage() {
                 if (!ignore) setGraphStatus('error')
             })
 
-        API.get('/trains/').then((r) => setTrains(r.data)).catch(() => {})
-        API.get('/carriages/').then((r) => setCarriages(r.data)).catch(() => {})
+        api.get('/trains/').then((r) => setTrains(r)).catch(() => {})
+        api.get('/carriages/').then((r) => setCarriages(r)).catch(() => {})
 
         return () => { ignore = true }
     }, [setFlowEdges, setFlowNodes])
@@ -253,7 +250,7 @@ export default function OptimizePage() {
                 carriage_ids: selCarriages,
                 departure_time: new Date(departure).toISOString(),
             }
-            const res = await API.post('/optimize', body)
+            const res = await api.post('/optimize', body)
             const receivedEnsembles = res.data.ensembles || []
             setEnsembles(receivedEnsembles)
             if (receivedEnsembles.length > 0) setSelectedEnsembleIdx(0)

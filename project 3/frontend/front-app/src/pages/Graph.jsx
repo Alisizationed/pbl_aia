@@ -11,16 +11,10 @@ import {
 import '@xyflow/react/dist/style.css'
 import '../App.css'
 
-const API_URL = import.meta.env.VITE_API_URL ?? 'http://localhost:8000'
+import { api } from '../api/api'
 
 async function loadNetworkGraph() {
-    const response = await fetch(`${API_URL}/network/graph`)
-
-    if (!response.ok) {
-        throw new Error(`Backend returned ${response.status}`)
-    }
-
-    return response.json()
+    return api.get('/network/graph')
 }
 
 function getNodePosition(index, total) {

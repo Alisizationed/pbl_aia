@@ -1,6 +1,8 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 
+from auth.roles import require_role
+from auth.users import get_current_user
 from database.database import SessionLocal
 from models.db_models import Train
 
@@ -16,12 +18,19 @@ def get_db():
 
 
 @router.get("/")
-def get_trains(db: Session = Depends(get_db)):
+def get_trains(
+        db: Session = Depends(get_db),
+        _user=Depends(get_current_user)
+):
     return db.query(Train).all()
 
 
 @router.get("/{train_id}")
-def get_train(train_id: int, db: Session = Depends(get_db)):
+def get_train(
+        train_id: int,
+        db: Session = Depends(get_db),
+        _user=Depends(get_current_user)
+):
     train = db.query(Train).filter(Train.id == train_id).first()
 
     if train is None:
@@ -31,7 +40,12 @@ def get_train(train_id: int, db: Session = Depends(get_db)):
 
 
 @router.post("/")
-def create_train(capacity: float, used_weight: float = 0, db: Session = Depends(get_db)):
+def create_train(
+        capacity: float,
+        used_weight: float = 0,
+        db: Session = Depends(get_db),
+        _user=Depends(require_role("admin"))
+):
     train = Train(capacity=capacity, used_weight=used_weight)
 
     db.add(train)
@@ -43,10 +57,11 @@ def create_train(capacity: float, used_weight: float = 0, db: Session = Depends(
 
 @router.put("/{train_id}")
 def update_train(
-    train_id: int,
-    capacity: float,
-    used_weight: float,
-    db: Session = Depends(get_db)
+        train_id: int,
+        capacity: float,
+        used_weight: float,
+        db: Session = Depends(get_db),
+        _user=Depends(require_role("admin"))
 ):
     train = db.query(Train).filter(Train.id == train_id).first()
 
@@ -63,7 +78,11 @@ def update_train(
 
 
 @router.delete("/{train_id}")
-def delete_train(train_id: int, db: Session = Depends(get_db)):
+def delete_train(
+        train_id: int,
+        db: Session = Depends(get_db),
+        _user=Depends(require_role("admin"))
+):
     train = db.query(Train).filter(Train.id == train_id).first()
 
     if train is None:

@@ -6,6 +6,9 @@ from sqlalchemy.orm import Session
 from database.database import SessionLocal
 from models.db_models import EdgeTimeWindow
 
+from auth.users import get_current_user
+from auth.roles import require_role
+
 router = APIRouter(prefix="/time-windows", tags=["Time Windows"])
 
 
@@ -18,12 +21,19 @@ def get_db():
 
 
 @router.get("/")
-def get_time_windows(db: Session = Depends(get_db)):
+def get_time_windows(
+        db: Session = Depends(get_db),
+        _user=Depends(get_current_user)
+):
     return db.query(EdgeTimeWindow).all()
 
 
 @router.get("/{time_window_id}")
-def get_time_window(time_window_id: int, db: Session = Depends(get_db)):
+def get_time_window(
+        time_window_id: int,
+        db: Session = Depends(get_db),
+        _user=Depends(get_current_user)
+):
     time_window = (
         db.query(EdgeTimeWindow)
         .filter(EdgeTimeWindow.id == time_window_id)
@@ -38,10 +48,11 @@ def get_time_window(time_window_id: int, db: Session = Depends(get_db)):
 
 @router.post("/")
 def create_time_window(
-    edge_id: int,
-    valid_from: datetime,
-    valid_until: datetime,
-    db: Session = Depends(get_db)
+        edge_id: int,
+        valid_from: datetime,
+        valid_until: datetime,
+        db: Session = Depends(get_db),
+        _user=Depends(require_role("admin"))
 ):
     time_window = EdgeTimeWindow(
         edge_id=edge_id,
@@ -58,11 +69,12 @@ def create_time_window(
 
 @router.put("/{time_window_id}")
 def update_time_window(
-    time_window_id: int,
-    edge_id: int,
-    valid_from: datetime,
-    valid_until: datetime,
-    db: Session = Depends(get_db)
+        time_window_id: int,
+        edge_id: int,
+        valid_from: datetime,
+        valid_until: datetime,
+        db: Session = Depends(get_db),
+        _user=Depends(require_role("admin"))
 ):
     time_window = (
         db.query(EdgeTimeWindow)
@@ -84,7 +96,11 @@ def update_time_window(
 
 
 @router.delete("/{time_window_id}")
-def delete_time_window(time_window_id: int, db: Session = Depends(get_db)):
+def delete_time_window(
+        time_window_id: int,
+        db: Session = Depends(get_db),
+        _user=Depends(require_role("admin"))
+):
     time_window = (
         db.query(EdgeTimeWindow)
         .filter(EdgeTimeWindow.id == time_window_id)

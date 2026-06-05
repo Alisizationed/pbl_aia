@@ -1,0 +1,67 @@
+version: "4.1"
+
+services:
+  app-db:
+    image: postgres:17
+    container_name: railway-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: railway_db
+      POSTGRES_USER: railway_user
+      POSTGRES_PASSWORD: railway_password
+    ports:
+      - "5432:5432"
+    volumes:
+      - railway_data:/var/lib/postgresql/data
+
+  keycloak-db:
+    image: postgres:17
+    container_name: keycloak-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: keycloak
+      POSTGRES_USER: keycloak
+      POSTGRES_PASSWORD: keycloak_password
+    volumes:
+      - keycloak_data:/var/lib/postgresql/data
+
+  keycloak:
+    image: quay.io/keycloak/keycloak:26.3
+    container_name: keycloak
+    restart: unless-stopped
+    command: start-dev
+    environment:
+      KC_DB: postgres
+      KC_DB_URL_HOST: keycloak-db
+      KC_DB_URL_DATABASE: keycloak
+      KC_DB_USERNAME: keycloak
+      KC_DB_PASSWORD: keycloak_password
+
+      KEYCLOAK_ADMIN: admin
+      KEYCLOAK_ADMIN_PASSWORD: admin
+
+      KC_HTTP_ENABLED: true
+    ports:
+      - "8080:8080"
+    depends_on:
+      - keycloak-db
+
+  backend:
+    build: ./backend
+    container_name: railway-backend
+    restart: unless-stopped
+    environment:
+      DATABASE_URL: postgresql://railway_user:railway_password@app-db:5432/railway_db
+      KEYCLOAK_URL: http://keycloak:8080
+      KEYCLOAK_REALM: railway
+      KEYCLOAK_CLIENT_ID: frontend
+      ISSUER: http://localhost:8080/realms/railway
+    ports:
+      - "8000:8000"
+    depends_on:
+      - app-db
+      - keycloak
+
+volumes:
+  railway_data:
+  keycloak_data:
