@@ -2,6 +2,41 @@
 
 Projects for PBL AIA.
 
+## Project 3
+
+To run this project, first clone the repo:
+
+```
+git clone https://github.com/Alisizationed/pbl_aia
+```
+
+Then, built the docker container for backend by running in folder /backend:
+
+```
+docker build -t backend
+```
+
+To run the ```docker-compose.yaml```, in /pbl_aia``` run in cmd:
+
+```
+docker-compose up
+```
+
+Next step is importing the realm to keycloak:
+open ```http:localhost:8080```, click on "Import realm" and attach there the json file from ```/keycloak```.
+
+Get into ```users``` and create a new user to be used for work. To give the privileges, give the realm roles to the user.
+
+Then
+
+```
+docker exec -i railway-postgres psql -U railway_user -d railway_db < schema.sql
+docker exec -i railway-postgres psql -U railway_user -d railway_db < update.sql
+docker exec -i railway-postgres psql -U railway_user -d railway_db < fix.sql
+```
+
+You're ready to work!
+
 ## Project 2
 
 Single Source Shortest Path (SSSP) Benchmark
